@@ -1,7 +1,12 @@
+from typing import List
 from fastapi import FastAPI
+
+from models import User
 
 app = FastAPI()
 
+db: List[User]
+
 @app.get("/")
-def root():
-    return {"Hello": "World"}
+async def root():
+    return {"Hello": "Mondo"}
