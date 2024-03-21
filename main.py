@@ -1,33 +1,36 @@
-from typing import List
-from uuid import UUID
-from fastapi import FastAPI
-from models import Role, User
+from fastapi import FastAPI, Depends, HTTPException
+from sqlalchemy.orm import Session
+import crud
+import models
+import schemas
+from database import SessionLocal, engine
 
+# Create the database tables
+models.Base.metadata.create_all(bind=engine)
+
+# Create FastAPI app instance
 app = FastAPI()
 
-db: List[User] = [
-    User(id=UUID("eea55460-5d3c-4679-a78c-b53d764f6b35"),
-         first_name="Jamila",
-         last_name="Ahmed",
-         roles=[Role.student]),
-    User(id=UUID("eb55ddeb-efd6-41f8-a133-cf80a20c7a84"),
-         first_name="Alex",
-         last_name="Jones",
-         roles=[Role.admin, Role.user])
-]
+
+# Dependency to get the database session
+def get_db():
+    db = SessionLocal()
+    try:
+        yield db
+    finally:
+        db.close()
 
 
-@app.get("/")
-async def root():
-    return {"Hello": "Mondo"}
+# Endpoint to create a new user
+@app.post("/users/", response_model=schemas.User)
+def create_user(user: schemas.UserCreate, db: Session = Depends(get_db)):
+    return crud.create_user(db=db, user=user)
 
 
-@app.get("/api/v1/users")
-async def fetch_users():
-    return db
-
-
-@app.post("/api/v1/users")
-async def register_user(user: User):
-    db.append(user)
-    return {"id": user.id}
+# Endpoint to get a user by ID
+@app.get("/users/{user_id}", response_model=schemas.User)
+def read_user(user_id: int, db: Session = Depends(get_db)):
+    db_user = crud.get_user(db=db, user_id=user_id)
+    if db_user is None:
+        raise HTTPException(status_code=404, detail="User not found")
+    return db_user

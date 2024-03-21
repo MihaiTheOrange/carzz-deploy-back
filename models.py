@@ -1,17 +1,14 @@
-from typing import Optional, List
-from uuid import UUID, uuid4
-from pydantic import BaseModel
-from enum import Enum
+from sqlalchemy import Column, Integer, String
+from sqlalchemy.orm import declarative_base
+
+Base = declarative_base()
 
 
-class Role(str, Enum):
-    admin = "admin"
-    user = "user"
-    student = "student"
+class User(Base):
+    __tablename__ = "users"
 
-
-class User(BaseModel):
-    id: Optional[UUID] = uuid4()
-    first_name: str
-    last_name: str
-    roles: List[Role]
+    id = Column(Integer, primary_key=True, index=True)
+    username = Column(String, unique=True, index=True)
+    password = Column(String)
+    full_name = Column(String)
+    email = Column(String, unique=True, index=True)
