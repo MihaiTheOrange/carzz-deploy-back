@@ -9,7 +9,7 @@ def get_user(db: Session, user_id: int):
 
 
 def create_user(db: Session, user: schemas.UserCreate):
-    db_user = models.User(username=user.username, password=user.password, full_name=user.full_name, email=user.email)
+    db_user = models.User(username=user.username, password=user.password, full_name=user.full_name, email=user.email, role=user.role)
     db.add(db_user)
     db.commit()
     db.refresh(db_user)
