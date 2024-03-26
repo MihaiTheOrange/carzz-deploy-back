@@ -8,6 +8,9 @@ class CreateUserRequest(BaseModel):
     email: str
     role: str
 
+    class Config:
+        from_attributes = True
+
 
 class UserUpdate(BaseModel):
     username: str
@@ -24,8 +27,14 @@ class Token(BaseModel):
 class User(BaseModel):
     id: int
 
+
+class Car(BaseModel):
+    make: str
+    model: str
+    year: int
+    mileage: float
+    price: float
+    additional_features: str = None
+
     class Config:
         from_attributes = True
-
-
-
