@@ -2,6 +2,8 @@ from typing import Annotated
 from starlette import status
 from fastapi import FastAPI, Depends, HTTPException
 from sqlalchemy.orm import Session
+
+import announcements
 from auth import get_current_user
 from database import SessionLocal, engine
 
@@ -13,6 +15,7 @@ import schemas
 # Create FastAPI app instance
 app = FastAPI()
 app.include_router(auth.router)
+app.include_router(announcements.router)
 
 # Create the database tables
 models.Base.metadata.create_all(bind=engine)
@@ -31,7 +34,7 @@ db_dependency = Annotated[Session, Depends(get_db)]
 user_dependency = Annotated[dict, Depends(get_current_user)]
 
 
-@app.get("/wel")
+@app.get("/")
 def welcome():
     return {"Welcome!"}
 

@@ -33,3 +33,33 @@ def delete_user(db: Session, user_id: int):
         db.commit()
         return True
     return False
+
+
+def create_announcement(db: Session, announcement: schemas.AnnouncementCreate, user_id: int):
+    db_announcement = models.Announcements(**announcement.dict(), user_id=user_id)
+    db.add(db_announcement)
+    db.commit()
+    db.refresh(db_announcement)
+    return db_announcement
+
+
+def get_announcements(db: Session, skip: int = 0, limit: int = 10):
+    return db.query(models.Announcements).offset(skip).limit(limit).all()
+
+
+def get_announcement(db: Session, announcement_id: int):
+    return db.query(models.Announcements).filter(models.Announcements.id == announcement_id).first()
+
+
+def update_announcement(db: Session, announcement: models.Announcements, announcement_update: schemas.AnnouncementUpdate):
+    for key, value in announcement_update.dict().items():
+        setattr(announcement, key, value)
+    db.commit()
+    db.refresh(announcement)
+    return announcement
+
+
+def delete_announcement(db: Session, announcement_id: int):
+    db_announcement = db.query(models.Announcements).filter(models.Announcements.id == announcement_id).first()
+    db.delete(db_announcement)
+    db.commit()

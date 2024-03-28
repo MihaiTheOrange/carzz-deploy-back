@@ -1,31 +1,38 @@
 from pydantic import BaseModel
+from typing import Optional
 
 
-class CreateUserRequest(BaseModel):
+class UserBase(BaseModel):
     username: str
-    password: str
     full_name: str
     email: str
     role: str
 
-    class Config:
-        from_attributes = True
+
+class CreateUserRequest(UserBase):
+    password: str
 
 
 class UserUpdate(BaseModel):
-    username: str
-    password: str
-    full_name: str
-    role: str
+    username: Optional[str]
+    password: Optional[str]
+    full_name: Optional[str]
+    role: Optional[str]
 
 
 class Token(BaseModel):
     access_token: str
     token_type: str
 
+    class Config:
+        from_attributes = True
 
-class User(BaseModel):
+
+class User(UserBase):
     id: int
+
+    class Config:
+        from_attributes = True
 
 
 class Car(BaseModel):
@@ -34,7 +41,30 @@ class Car(BaseModel):
     year: int
     mileage: float
     price: float
-    additional_features: str = None
+    additional_features: Optional[str] = None
+
+    class Config:
+        from_attributes = True
+
+
+class AnnouncementBase(BaseModel):
+    title: str
+    description: str
+    price: float
+
+
+class AnnouncementCreate(AnnouncementBase):
+    pass
+
+
+class AnnouncementUpdate(AnnouncementBase):
+    pass
+
+
+class Announcement(AnnouncementBase):
+    id: int
+    user_id: int
+    car_id: int
 
     class Config:
         from_attributes = True
