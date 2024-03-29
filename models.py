@@ -14,25 +14,7 @@ class Users(Base):
     email = Column(String, unique=True)
     role = Column(String)
 
-    car = relationship("Cars", back_populates="users")
-    announcements = relationship("Announcements", back_populates="users")
-
-
-class Cars(Base):
-    __tablename__ = "cars"
-
-    id = Column(Integer, primary_key=True, index=True)
-    user_id = Column(Integer, ForeignKey('users.id'))
-    make = Column(String)
-    model = Column(String)
-    year = Column(Integer)
-    mileage = Column(Float)
-    price = Column(Float)
-    additional_features = Column(String, nullable=True)
-
-    # Establishing relationship with the Users table
-    user = relationship("Users", back_populates="cars")
-    announcements = relationship("Announcements", back_populates="cars")
+    announcements = relationship("Announcements", back_populates="user")
 
 
 class Announcements(Base):
@@ -42,11 +24,11 @@ class Announcements(Base):
     title = Column(String, index=True)
     description = Column(String)
     user_id = Column(Integer, ForeignKey('users.id'))
-    car_id = Column(Integer, ForeignKey('cars.id'))
+    make = Column(String)
+    model = Column(String)
+    year = Column(Integer)
+    mileage = Column(Float)
+    price = Column(Float)
+    additional_features = Column(String, nullable=True)
 
     user = relationship("Users", back_populates="announcements")
-    car = relationship("Cars", back_populates="announcements")
-
-    @property
-    def price(self):
-        return self.car.price

@@ -35,7 +35,9 @@ class User(UserBase):
         from_attributes = True
 
 
-class Car(BaseModel):
+class AnnouncementBase(BaseModel):
+    title: str
+    description: str
     make: str
     model: str
     year: int
@@ -45,12 +47,6 @@ class Car(BaseModel):
 
     class Config:
         from_attributes = True
-
-
-class AnnouncementBase(BaseModel):
-    title: str
-    description: str
-    price: float
 
 
 class AnnouncementCreate(AnnouncementBase):
@@ -64,7 +60,6 @@ class AnnouncementUpdate(AnnouncementBase):
 class Announcement(AnnouncementBase):
     id: int
     user_id: int
-    car_id: int
 
     class Config:
         from_attributes = True
