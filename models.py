@@ -14,6 +14,9 @@ class Users(Base):
     email = Column(String, unique=True)
     role = Column(String)
 
+    car = relationship("Cars", back_populates="users")
+    announcements = relationship("Announcements", back_populates="users")
+
 
 class Cars(Base):
     __tablename__ = "cars"
@@ -29,7 +32,7 @@ class Cars(Base):
 
     # Establishing relationship with the Users table
     user = relationship("Users", back_populates="cars")
-    announcements = relationship("Announcements", back_populates="car")
+    announcements = relationship("Announcements", back_populates="cars")
 
 
 class Announcements(Base):
