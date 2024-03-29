@@ -24,8 +24,8 @@ def get_db():
 
 # Create Announcements
 @router.post("/", response_model=schemas.Announcement)
-def create_announcement(announcement: schemas.AnnouncementCreate, db: Session = Depends(get_db), current_user: schemas.User = Depends(auth.get_current_user)):
-    return crud.create_announcement(db=db, announcement=announcement, user_id=current_user.id)
+def create_announcement(announcement: schemas.AnnouncementCreate, db: Session = Depends(get_db), current_user: dict = Depends(auth.get_current_user)):
+    return crud.create_announcement(db=db, announcement=announcement, user_id=current_user.get('id'))
 
 
 # Get Announcements
@@ -46,22 +46,22 @@ def read_announcement(announcement_id: int, db: Session = Depends(get_db)):
 
 # Update Announcements
 @router.put("/{announcement_id}", response_model=schemas.Announcement)
-def update_announcement(announcement_id: int, announcement_update: schemas.AnnouncementUpdate, db: Session = Depends(get_db), current_user: schemas.User = Depends(auth.get_current_user)):
+def update_announcement(announcement_id: int, announcement_update: schemas.AnnouncementUpdate, db: Session = Depends(get_db), current_user: dict = Depends(auth.get_current_user)):
     db_announcement = crud.get_announcement(db=db, announcement_id=announcement_id)
     if db_announcement is None:
         raise HTTPException(status_code=404, detail="Announcements not found")
-    if db_announcement.user_id != current_user.id:
+    if db_announcement.user_id != current_user.get('id'):
         raise HTTPException(status_code=403, detail="You are not allowed to update this announcement")
     return crud.update_announcement(db=db, announcement=db_announcement, announcement_update=announcement_update)
 
 
 # Delete Announcements
 @router.delete("/{announcement_id}")
-def delete_announcement(announcement_id: int, db: Session = Depends(get_db), current_user: schemas.User = Depends(auth.get_current_user)):
+def delete_announcement(announcement_id: int, db: Session = Depends(get_db), current_user: dict = Depends(auth.get_current_user)):
     db_announcement = crud.get_announcement(db=db, announcement_id=announcement_id)
     if db_announcement is None:
         raise HTTPException(status_code=404, detail="Announcements not found")
-    if db_announcement.user_id != current_user.id:
+    if db_announcement.user_id != current_user.get('id'):
         raise HTTPException(status_code=403, detail="You are not allowed to delete this announcement")
     crud.delete_announcement(db=db, announcement_id=announcement_id)
     return {"message": "Announcements deleted successfully"}
