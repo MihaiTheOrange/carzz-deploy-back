@@ -1,5 +1,4 @@
 from typing import Annotated
-from starlette import status
 from fastapi import FastAPI, Depends, HTTPException
 from sqlalchemy.orm import Session
 
