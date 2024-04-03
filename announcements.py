@@ -43,7 +43,7 @@ def read_announcement(announcement_id: int, db: Session = Depends(get_db)):
         raise HTTPException(status_code=404, detail="Announcements not found")
     return db_announcement
 
-
+# Search Announcements
 @router.get("/search/")
 async def search_announcements(
     make: str = Query(None),

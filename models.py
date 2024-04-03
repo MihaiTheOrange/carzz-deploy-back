@@ -10,9 +10,9 @@ class Users(Base):
     id = Column(Integer, primary_key=True, index=True)
     username = Column(String, unique=True)
     hashed_password = Column(String)
-    full_name = Column(String, unique=True)
+    full_name = Column(String)
     email = Column(String, unique=True)
-    role = Column(String)
+    county = Column(String)
 
     announcements = relationship("Announcements", back_populates="user")
 
@@ -32,3 +32,17 @@ class Announcements(Base):
     additional_features = Column(String, nullable=True)
 
     user = relationship("Users", back_populates="announcements")
+
+
+class Make(Base):
+    __tablename__ = "make"
+
+    title = Column(String, primary_key=True, index=True)
+
+
+class Model(Base):
+    __tablename__ = "model"
+
+    id = Column(Integer, primary_key=True)
+    title = Column(Integer, index=True)
+    make_id = Column(String, ForeignKey('make.title'))
