@@ -30,6 +30,14 @@ class Announcements(Base):
     mileage = Column(Float)
     price = Column(Float)
     additional_features = Column(String, nullable=True)
+    motor_capacity = Column(Integer)
+    fuel_type = Column(String)
+    gearbox = Column(String)
+    car_body = Column(String)
+    seats = Column(Integer)
+    horsepower = Column(Integer)
+    color = Column(String)
+    condition = Column(String)
 
     user = relationship("Users", back_populates="announcements")
 
@@ -44,5 +52,5 @@ class Model(Base):
     __tablename__ = "model"
 
     id = Column(Integer, primary_key=True)
-    title = Column(Integer, index=True)
+    title = Column(String, index=True)
     make_id = Column(String, ForeignKey('make.title'))
