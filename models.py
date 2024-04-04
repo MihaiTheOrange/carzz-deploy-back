@@ -12,7 +12,7 @@ class Users(Base):
     hashed_password = Column(String)
     full_name = Column(String)
     email = Column(String, unique=True)
-    county = Column(String)
+    judet = Column(String)
 
     announcements = relationship("Announcements", back_populates="user")
 
@@ -54,3 +54,10 @@ class Model(Base):
     id = Column(Integer, primary_key=True)
     title = Column(String, index=True)
     make_id = Column(String, ForeignKey('make.title'))
+
+class Favorite(Base):
+    __tablename__="favorites"
+
+    id=Column(Integer, primary_key=True)
+    user_id=Column(Integer,ForeignKey('users.id'))
+    announcement_id=Column(Integer,ForeignKey('announcements.id'))

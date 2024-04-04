@@ -64,3 +64,6 @@ class Announcement(AnnouncementBase):
 
     class Config:
         from_attributes = True
+
+class Favorite(BaseModel):
+    announcement_id: int

@@ -63,3 +63,14 @@ def delete_announcement(db: Session, announcement_id: int):
     db_announcement = db.query(models.Announcements).filter(models.Announcements.id == announcement_id).first()
     db.delete(db_announcement)
     db.commit()
+
+def add_favorite(db: Session, favorite: schemas.Favorite, id):
+    favorite_model=models.Favorite(
+        user_id=id,
+        announcement_id=favorite.announcement_id
+    )
+    db.add(favorite_model)
+    db.commit()
+    return f'{favorite_model} was added'
+
+
