@@ -46,22 +46,55 @@ def read_announcement(announcement_id: int, db: Session = Depends(get_db)):
 # Search Announcements
 @router.get("/search/")
 async def search_announcements(
-    make: str = Query(None),
+    brand: str = Query(None),
     model: str = Query(None),
     min_year: int = Query(None),
     max_year: int = Query(None),
+    min_mileage: int = Query(None),
+    max_mileage: int = Query(None),
+    min_cylinder_volume: int = Query(None),
+    max_cylinder_volume: int = Query(None),
     min_price: int = Query(None),
     max_price: int = Query(None),
+    fuel_type: str = Query(None),
+    gearbox: str = Query(None),
+    car_body: str = Query(None),
+    seats: str = Query(None),
+    min_horsepower: str = Query(None),
+    max_horsepower: str = Query(None),
+    color: str = Query(None),
     db: Session = Depends(get_db)
 ):
     # Build the base query
     query = db.query(Announcements)
 
     # Apply filters based on query parameters
-    if make:
-        query = query.filter(Announcements.make.ilike(f"%{make}%"))
+    if brand:
+        query = query.filter(Announcements.brand.ilike(f"%{brand}%"))
     if model:
         query = query.filter(Announcements.model.ilike(f"%{model}%"))
+    if min_mileage:
+        query = query.filter(Announcements.mileage >= min_mileage)
+    if max_mileage:
+        query = query.filter(Announcements.mileage <= max_mileage)
+    if min_cylinder_volume:
+        query = query.filter(Announcements.motor_capacity >= min_cylinder_volume)
+    if max_cylinder_volume:
+        query = query.filter(Announcements.motor_capacity <= max_cylinder_volume)
+    if fuel_type:
+        query = query.filter(Announcements.fuel_type.ilike(f"%{fuel_type}%"))
+    if gearbox:
+        query = query.filter(Announcements.gearbox.ilike(f"%{gearbox}%"))
+    if car_body:
+        query = query.filter(Announcements.car_body.ilike(f"%{car_body}%"))
+    if seats:
+        query = query.filter(Announcements.seats.ilike(f"%{seats}%"))
+    if min_horsepower:
+        query = query.filter(Announcements.horsepower >= min_horsepower)
+    if max_horsepower:
+        query = query.filter(Announcements.horsepower >= max_horsepower)
+    if color:
+        query = query.filter(Announcements.color.ilike(f"%{color}%"))
     if min_year:
         query = query.filter(Announcements.year >= min_year)
     if max_year:
