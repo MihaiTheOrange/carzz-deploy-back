@@ -1,12 +1,13 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 from typing import Optional
+from pydantic import EmailStr
 
 
 class UserBase(BaseModel):
-    username: str
-    full_name: str
-    email: str
-    role: str
+    username: str = Field(min_length=3, max_length=30)
+    full_name: str = Field(min_length=3, max_length=30)
+    email: EmailStr
+    judet: str = Field(min_length=3, max_length=30)
 
 
 class CreateUserRequest(UserBase):
@@ -44,14 +45,14 @@ class AnnouncementBase(BaseModel):
     mileage: float
     price: float
     additional_features: Optional[str] = None
-    motor_capacity = int
-    fuel_type = str
-    gearbox = str
-    car_body = str
-    seats = int
-    horsepower = int
-    color = str
-    condition = str
+    motor_capacity: int
+    fuel_type: str
+    gearbox: str
+    car_body: str
+    seats: int
+    horsepower: int
+    color: str
+    condition: str
 
     class Config:
         from_attributes = True

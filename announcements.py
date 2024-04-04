@@ -109,6 +109,7 @@ async def search_announcements(
     return announcements
 
 
+
 # Update Announcements
 @router.put("/{announcement_id}", response_model=schemas.Announcement)
 def update_announcement(announcement_id: int, announcement_update: schemas.AnnouncementUpdate, db: Session = Depends(get_db), current_user: dict = Depends(auth.get_current_user)):

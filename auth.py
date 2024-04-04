@@ -42,7 +42,7 @@ async def create_user(db: db_dependency,
         hashed_password=bcrypt_context.hash(create_user_request.password),
         full_name=create_user_request.full_name,
         email=create_user_request.email,
-        role=create_user_request.role,
+        judet=create_user_request.judet
     )
 
     db.add(create_user_model)
