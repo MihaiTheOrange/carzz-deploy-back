@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy.orm import Session
 from typing import List
 from database import SessionLocal
@@ -6,7 +6,7 @@ from database import SessionLocal
 import crud
 import schemas
 import auth
-
+from models import Announcements
 
 router = APIRouter(
     prefix='/announcements',
@@ -42,6 +42,38 @@ def read_announcement(announcement_id: int, db: Session = Depends(get_db)):
     if db_announcement is None:
         raise HTTPException(status_code=404, detail="Announcements not found")
     return db_announcement
+
+# Search Announcements
+@router.get("/search/")
+async def search_announcements(
+    make: str = Query(None),
+    model: str = Query(None),
+    min_year: int = Query(None),
+    max_year: int = Query(None),
+    min_price: int = Query(None),
+    max_price: int = Query(None),
+    db: Session = Depends(get_db)
+):
+    # Build the base query
+    query = db.query(Announcements)
+
+    # Apply filters based on query parameters
+    if make:
+        query = query.filter(Announcements.make.ilike(f"%{make}%"))
+    if model:
+        query = query.filter(Announcements.model.ilike(f"%{model}%"))
+    if min_year:
+        query = query.filter(Announcements.year >= min_year)
+    if max_year:
+        query = query.filter(Announcements.year <= max_year)
+    if min_price:
+        query = query.filter(Announcements.price >= min_price)
+    if max_price:
+        query = query.filter(Announcements.price <= max_price)
+
+    # Execute the query and return results
+    announcements = query.all()
+    return announcements
 
 
 # Update Announcements
