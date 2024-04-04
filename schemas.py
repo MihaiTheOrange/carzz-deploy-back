@@ -39,7 +39,7 @@ class User(UserBase):
 class AnnouncementBase(BaseModel):
     title: str
     description: str
-    make: str
+    brand: str
     model: str
     year: int
     mileage: float
