@@ -45,6 +45,14 @@ class AnnouncementBase(BaseModel):
     mileage: float
     price: float
     additional_features: Optional[str] = None
+    motor_capacity: int
+    fuel_type: str
+    gearbox: str
+    car_body: str
+    seats: int
+    horsepower: int
+    color: str
+    condition: str
 
     class Config:
         from_attributes = True
