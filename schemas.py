@@ -39,7 +39,7 @@ class User(UserBase):
 class AnnouncementBase(BaseModel):
     title: str
     description: str
-    brand: str
+    make: str
     model: str
     year: int
     mileage: float
@@ -72,6 +72,7 @@ class Announcement(AnnouncementBase):
 
     class Config:
         from_attributes = True
+
 
 class Favorite(BaseModel):
     announcement_id: int
