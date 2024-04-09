@@ -71,6 +71,8 @@ def add_favorite(db: Session, favorite: schemas.Favorite, id):
     )
     db.add(favorite_model)
     db.commit()
-    return f'{favorite_model} was added'
+    return f'product {favorite_model.announcement_id} was added'
 
-
+def read_favorites(db:Session, id):
+    favorite_announcements=db.query(models.Announcements).filter(models.Announcements.id==models.Favorite.announcement_id).all()
+    return favorite_announcements
