@@ -29,7 +29,7 @@ def create_announcement(announcement: schemas.AnnouncementCreate, db: Session = 
     return crud.create_announcement(db=db, announcement=announcement, user_id=current_user.get('id'))
 
 
-# Get Announcements
+# Get all Announcements
 @router.get("/", response_model=List[schemas.Announcement])
 def read_announcements(skip: int = 0, limit: int = 10, db: Session = Depends(get_db)):
     announcements = crud.get_announcements(db=db, skip=skip, limit=limit)
@@ -43,6 +43,15 @@ def read_announcement(announcement_id: int, db: Session = Depends(get_db)):
     if db_announcement is None:
         raise HTTPException(status_code=404, detail="Announcements not found")
     return db_announcement
+
+
+# Get my announcements
+@router.get("/my_announcements/", response_model=List[schemas.Announcement])
+def get_my_announcements(db: Session = Depends(get_db), current_user: dict = Depends(auth.get_current_user)):
+    announcements = crud.get_my_announcements(db=db, user_id=current_user.get('id'))
+    if announcements is None:
+        raise HTTPException(status_code=404, detail="Announcements not found")
+    return announcements
 
 
 # Search Announcements
