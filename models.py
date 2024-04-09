@@ -24,7 +24,7 @@ class Announcements(Base):
     title = Column(String, index=True)
     description = Column(String)
     user_id = Column(Integer, ForeignKey('users.id'))
-    make = Column(String)
+    brand = Column(String)
     model = Column(String)
     year = Column(Integer)
     mileage = Column(Float)
@@ -42,8 +42,8 @@ class Announcements(Base):
     user = relationship("Users", back_populates="announcements")
 
 
-class Make(Base):
-    __tablename__ = "make"
+class Brand(Base):
+    __tablename__ = "brand"
 
     title = Column(String, primary_key=True, index=True)
 
@@ -54,6 +54,7 @@ class Model(Base):
     id = Column(Integer, primary_key=True)
     title = Column(String, index=True)
     make_id = Column(String, ForeignKey('make.title'))
+    
 
 class Favorite(Base):
     __tablename__="favorites"
@@ -61,3 +62,4 @@ class Favorite(Base):
     id=Column(Integer, primary_key=True)
     user_id=Column(Integer,ForeignKey('users.id'))
     announcement_id=Column(Integer,ForeignKey('announcements.id'))
+
