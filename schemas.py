@@ -7,7 +7,7 @@ class UserBase(BaseModel):
     username: str = Field(min_length=3, max_length=30)
     full_name: str = Field(min_length=3, max_length=30)
     email: EmailStr
-    judet: str = Field(min_length=3, max_length=30)
+    county: str = Field(min_length=3, max_length=30)
 
 
 class CreateUserRequest(UserBase):
@@ -72,3 +72,6 @@ class Announcement(AnnouncementBase):
 
     class Config:
         from_attributes = True
+
+class Favorite(BaseModel):
+    announcement_id: int

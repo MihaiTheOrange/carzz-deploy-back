@@ -53,4 +53,13 @@ class Model(Base):
 
     id = Column(Integer, primary_key=True)
     title = Column(String, index=True)
-    brand_id = Column(String, ForeignKey('brand.title'))
+    make_id = Column(String, ForeignKey('make.title'))
+    
+
+class Favorite(Base):
+    __tablename__="favorites"
+
+    id=Column(Integer, primary_key=True)
+    user_id=Column(Integer,ForeignKey('users.id'))
+    announcement_id=Column(Integer,ForeignKey('announcements.id'))
+
