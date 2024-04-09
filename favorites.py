@@ -41,3 +41,13 @@ def add_favorite(favorite: schemas.Favorite, db: Session = Depends(get_db),curre
 def get_favorites(db: Session = Depends(get_db),current_user: dict = Depends(auth.get_current_user)):
     current_id=current_user.get('id')
     return crud.read_favorites(db,current_id)
+
+
+@router.delete('/{announcement_id}')
+def delete_favorite(announcement_id: int, db: Session = Depends(get_db),current_user: dict = Depends(auth.get_current_user)):
+    user_id = current_user.get('id')
+    db_favorite = crud.get_favorite(db, user_id, announcement_id)
+    if db_favorite is None:
+        raise HTTPException(status_code=404, detail="Favorite not found")
+    crud.delete_favorite(db, announcement_id, user_id)
+    return {"message": "Favorite deleted"}
