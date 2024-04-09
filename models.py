@@ -12,7 +12,7 @@ class Users(Base):
     hashed_password = Column(String)
     full_name = Column(String)
     email = Column(String, unique=True)
-    judet = Column(String)
+    county = Column(String)
 
     announcements = relationship("Announcements", back_populates="user")
 
