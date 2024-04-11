@@ -53,7 +53,7 @@ class Model(Base):
 
     id = Column(Integer, primary_key=True)
     title = Column(String, index=True)
-    make_id = Column(String, ForeignKey('make.title'))
+    make_id = Column(String)
     
 
 class Favorite(Base):
@@ -63,3 +63,9 @@ class Favorite(Base):
     user_id=Column(Integer,ForeignKey('users.id'))
     announcement_id=Column(Integer,ForeignKey('announcements.id'))
 
+
+class Image(Base):
+    __tablename__ = "images"
+    id = Column(Integer, primary_key=True, index=True)
+    filename = Column(String)
+    announcement_id=Column(Integer,ForeignKey('announcements.id'))
