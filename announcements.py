@@ -24,11 +24,12 @@ def get_db():
 
 # Create Announcements
 @router.post("/", response_model=schemas.Announcement)
-def create_announcement(announcement: schemas.AnnouncementCreate, db: Session = Depends(get_db), current_user: dict = Depends(auth.get_current_user)):
+def create_announcement(announcement: schemas.AnnouncementCreate, db: Session = Depends(get_db),
+                        current_user: dict = Depends(auth.get_current_user)):
     return crud.create_announcement(db=db, announcement=announcement, user_id=current_user.get('id'))
 
 
-# Get Announcements
+# Get all Announcements
 @router.get("/", response_model=List[schemas.Announcement])
 def read_announcements(skip: int = 0, limit: int = 10, db: Session = Depends(get_db)):
     announcements = crud.get_announcements(db=db, skip=skip, limit=limit)
@@ -43,27 +44,37 @@ def read_announcement(announcement_id: int, db: Session = Depends(get_db)):
         raise HTTPException(status_code=404, detail="Announcements not found")
     return db_announcement
 
+
+# Get my announcements
+@router.get("/my_announcements/", response_model=List[schemas.Announcement])
+def get_my_announcements(db: Session = Depends(get_db), current_user: dict = Depends(auth.get_current_user)):
+    announcements = crud.get_my_announcements(db=db, user_id=current_user.get('id'))
+    if announcements is None:
+        raise HTTPException(status_code=404, detail="Announcements not found")
+    return announcements
+
+
 # Search Announcements
 @router.get("/search/")
 async def search_announcements(
-    brand: str = Query(None),
-    model: str = Query(None),
-    min_year: int = Query(None),
-    max_year: int = Query(None),
-    min_mileage: int = Query(None),
-    max_mileage: int = Query(None),
-    min_cylinder_volume: int = Query(None),
-    max_cylinder_volume: int = Query(None),
-    min_price: int = Query(None),
-    max_price: int = Query(None),
-    fuel_type: str = Query(None),
-    gearbox: str = Query(None),
-    car_body: str = Query(None),
-    seats: str = Query(None),
-    min_horsepower: str = Query(None),
-    max_horsepower: str = Query(None),
-    color: str = Query(None),
-    db: Session = Depends(get_db)
+        brand: str = Query(None),
+        model: str = Query(None),
+        min_year: int = Query(None),
+        max_year: int = Query(None),
+        min_mileage: int = Query(None),
+        max_mileage: int = Query(None),
+        min_cylinder_volume: int = Query(None),
+        max_cylinder_volume: int = Query(None),
+        min_price: int = Query(None),
+        max_price: int = Query(None),
+        fuel_type: str = Query(None),
+        gearbox: str = Query(None),
+        car_body: str = Query(None),
+        seats: str = Query(None),
+        min_horsepower: str = Query(None),
+        max_horsepower: str = Query(None),
+        color: str = Query(None),
+        db: Session = Depends(get_db)
 ):
     # Build the base query
     query = db.query(Announcements)
@@ -109,10 +120,10 @@ async def search_announcements(
     return announcements
 
 
-
 # Update Announcements
 @router.put("/{announcement_id}", response_model=schemas.Announcement)
-def update_announcement(announcement_id: int, announcement_update: schemas.AnnouncementUpdate, db: Session = Depends(get_db), current_user: dict = Depends(auth.get_current_user)):
+def update_announcement(announcement_id: int, announcement_update: schemas.AnnouncementUpdate,
+                        db: Session = Depends(get_db), current_user: dict = Depends(auth.get_current_user)):
     db_announcement = crud.get_announcement(db=db, announcement_id=announcement_id)
     if db_announcement is None:
         raise HTTPException(status_code=404, detail="Announcements not found")
@@ -123,7 +134,8 @@ def update_announcement(announcement_id: int, announcement_update: schemas.Annou
 
 # Delete Announcements
 @router.delete("/{announcement_id}")
-def delete_announcement(announcement_id: int, db: Session = Depends(get_db), current_user: dict = Depends(auth.get_current_user)):
+def delete_announcement(announcement_id: int, db: Session = Depends(get_db),
+                        current_user: dict = Depends(auth.get_current_user)):
     db_announcement = crud.get_announcement(db=db, announcement_id=announcement_id)
     if db_announcement is None:
         raise HTTPException(status_code=404, detail="Announcements not found")

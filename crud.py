@@ -47,6 +47,10 @@ def get_announcements(db: Session, skip: int = 0, limit: int = 10):
     return db.query(models.Announcements).offset(skip).limit(limit).all()
 
 
+def get_my_announcements(db: Session, user_id: int, skip: int = 0, limit: int = 10):
+    return db.query(models.Announcements).filter(models.Announcements.user_id == user_id).offset(skip).limit(limit).all()
+
+
 def get_announcement(db: Session, announcement_id: int):
     return db.query(models.Announcements).filter(models.Announcements.id == announcement_id).first()
 
