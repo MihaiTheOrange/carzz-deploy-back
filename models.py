@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, Float, ForeignKey
+from sqlalchemy import Column, Integer, String, Float, ForeignKey, LargeBinary
 from sqlalchemy.orm import declarative_base, relationship
 
 Base = declarative_base()
@@ -55,9 +55,17 @@ class Model(Base):
     title = Column(String, index=True)
     make_id = Column(String, ForeignKey('make.title'))
 
+
 class Favorite(Base):
-    __tablename__="favorites"
+    __tablename__ = "favorites"
 
     id=Column(Integer, primary_key=True)
     user_id=Column(Integer,ForeignKey('users.id'))
     announcement_id=Column(Integer,ForeignKey('announcements.id'))
+
+
+class Image(Base):
+    __tablename__ = "announcement_images"
+    id = Column(Integer, primary_key=True, index=True)
+    filename = Column(String)
+    announcement_id = Column(Integer,ForeignKey('announcements.id'))

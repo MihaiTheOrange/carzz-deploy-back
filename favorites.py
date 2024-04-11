@@ -22,8 +22,8 @@ def get_db():
         db.close()
 
 
-def check_favorite(user_id: int, product_id: int, dbb: Session = Depends(get_db)):
-    favorite = dbb.query(Favorite).filter(Favorite.user_id == user_id, Favorite.announcement_id == product_id).first()
+def check_favorite(user_id: int, announcement_id: int, dbb: Session = Depends(get_db)):
+    favorite = dbb.query(Favorite).filter(Favorite.user_id == user_id, Favorite.announcement_id == announcement_id).first()
     return favorite is not None
 
 
