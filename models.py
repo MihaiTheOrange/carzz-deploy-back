@@ -68,4 +68,4 @@ class Image(Base):
     __tablename__ = "images"
     id = Column(Integer, primary_key=True, index=True)
     filename = Column(String)
-    announcement_id=Column(Integer,ForeignKey('announcements.id'))
+    announcement_id = Column(Integer,ForeignKey('announcements.id'))
