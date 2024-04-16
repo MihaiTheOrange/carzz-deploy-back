@@ -76,3 +76,22 @@ class Announcement(AnnouncementBase):
 
 class Favorite(BaseModel):
     announcement_id: int
+
+
+class SellerRatingBase(BaseModel):
+    seller_id: int
+    rating: int
+    comment: Optional[str]
+
+
+class SellerRatingCreate(SellerRatingBase):
+    pass
+
+
+class SellerRating(SellerRatingBase):
+    id: int
+    user_id: int
+    created_at: Optional[str]
+
+    class Config:
+        from_attributes = True

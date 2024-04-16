@@ -1,4 +1,5 @@
-from sqlalchemy import Column, Integer, String, Float, ForeignKey
+from sqlalchemy import Column, Integer, String, Float, ForeignKey, Text, func
+from sqlalchemy.dialects.postgresql import TIMESTAMP
 from sqlalchemy.orm import declarative_base, relationship
 
 Base = declarative_base()
@@ -62,3 +63,21 @@ class Favorite(Base):
     id = Column(Integer, primary_key=True)
     user_id = Column(Integer, ForeignKey('users.id'))
     announcement_id = Column(Integer, ForeignKey('announcements.id'))
+
+
+class SellerRating(Base):
+    __tablename__ = 'seller_ratings'
+
+    id = Column(Integer, primary_key=True)
+    user_id = Column(Integer, ForeignKey('users.id'), nullable=False)
+    seller_id = Column(Integer, ForeignKey('users.id'), nullable=False)
+    rating = Column(Integer, nullable=False)
+    comment = Column(Text)
+    created_at = Column(TIMESTAMP, nullable=False, server_default=func.now())
+
+    # Define relationships
+    user = relationship("Users", foreign_keys=[user_id], primaryjoin="SellerRating.user_id == Users.id")
+    seller = relationship("Users", foreign_keys=[seller_id], primaryjoin="SellerRating.seller_id == Users.id")
+
+    def __repr__(self):
+        return f"<SellerRating(id={self.id}, rating={self.rating}, user_id={self.user_id}, seller_id={self.seller_id}, created_at={self.created_at})>"
