@@ -23,10 +23,11 @@ def get_db():
 
 
 # Create Announcements
-@router.post("/", response_model=schemas.Announcement)
+@router.post("/")
 def create_announcement(announcement: schemas.AnnouncementCreate, db: Session = Depends(get_db),
                         current_user: dict = Depends(auth.get_current_user)):
-    return crud.create_announcement(db=db, announcement=announcement, user_id=current_user.get('id'))
+    crud.create_announcement(db=db, announcement=announcement, user_id=current_user.get('id'))
+    return {"message": "Announcement created"}
 
 
 # Get all Announcements

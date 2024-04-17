@@ -12,8 +12,8 @@ import shutil
 import auth
 
 router = APIRouter(
-    prefix = '/images',
-    tags = ['announcement_images']
+    prefix='/images',
+    tags=['announcement_images']
 )
 
 
@@ -30,7 +30,7 @@ os.makedirs(UPLOAD_DIR, exist_ok=True)
 router.mount("/uploads", StaticFiles(directory=UPLOAD_DIR), name="uploads")
 
 @router.post("/upload/")
-async def upload_image(announcement_id:int, files: List[UploadFile] = File(...), db: Session = Depends(get_db), current_user: dict = Depends(auth.get_current_user)):
+async def upload_image(announcement_id: int, files: List[UploadFile] = File(...), db: Session = Depends(get_db), current_user: dict = Depends(auth.get_current_user)):
     announcement = db.query(Announcements).filter(Announcements.id == announcement_id).first()
     if announcement is None:
         raise HTTPException(status_code=404, detail="Product not found")

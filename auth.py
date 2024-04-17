@@ -37,6 +37,15 @@ db_dependency = Annotated[Session, Depends(get_db)]
 @router.post('/', status_code=status.HTTP_201_CREATED)
 async def create_user(db: db_dependency,
                       create_user_request: CreateUserRequest):
+
+    user_db = db.query(Users).filter(create_user_request.username == Users.username).first()
+    if user_db:
+        raise HTTPException(status_code=400, detail="Username already taken")
+
+    user_db2 = db.query(Users).filter(create_user_request.email == Users.email).first()
+    if user_db2:
+        raise HTTPException(status_code=400, detail="Email already taken")
+
     create_user_model = Users(
         username=create_user_request.username,
         hashed_password=bcrypt_context.hash(create_user_request.password),
@@ -47,6 +56,7 @@ async def create_user(db: db_dependency,
 
     db.add(create_user_model)
     db.commit()
+    return {"message": f"user {create_user_request.username} created"}
 
 
 # Endpoint to for login
