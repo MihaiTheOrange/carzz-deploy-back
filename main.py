@@ -4,6 +4,7 @@ from sqlalchemy.orm import Session
 
 import favorites
 import announcements
+import ratings
 from auth import get_current_user
 from database import SessionLocal, engine
 
@@ -12,11 +13,14 @@ import crud
 import models
 import schemas
 
+
 # Create FastAPI app instance
 app = FastAPI()
 app.include_router(auth.router)
 app.include_router(announcements.router)
 app.include_router(favorites.router)
+app.include_router(ratings.router)
+
 
 # Create the database tables
 models.Base.metadata.create_all(bind=engine)
