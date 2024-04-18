@@ -6,6 +6,7 @@ from models import Users
 import os
 from announcement_images import UPLOAD_DIR
 
+
 def get_user(db: Session, user_id: int):
     return db.query(models.Users).filter(models.Users.id == user_id).first()
 
@@ -60,6 +61,7 @@ def get_my_announcements(db: Session, user_id: int, skip: int = 0, limit: int = 
         announcement.user_phone_number = user.phone_number
     return announcements
 
+
 def get_announcement(db: Session, announcement_id: int):
     announcement = db.query(models.Announcements).filter(models.Announcements.id == announcement_id).first()
     if announcement is None:
@@ -104,7 +106,10 @@ def add_favorite(db: Session, favorite: schemas.Favorite, id: int):
 
 
 def read_favorites(db:Session, id: int):
-    favorite_announcements=db.query(models.Announcements).filter(models.Announcements.id==models.Favorite.announcement_id, models.Favorite.user_id==id).all()
+    favorite_announcements = db.query(models.Announcements).filter(models.Announcements.id==models.Favorite.announcement_id, models.Favorite.user_id == id).all()
+    for announcement in favorite_announcements:
+        user = db.query(Users).filter(Users.id == announcement.user_id).first()
+        announcement.user_phone_number = user.phone_number
     return favorite_announcements
 
 

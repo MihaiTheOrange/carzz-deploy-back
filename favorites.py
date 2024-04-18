@@ -39,8 +39,8 @@ def add_favorite(favorite: schemas.Favorite, db: Session = Depends(get_db),curre
 
 @router.get('/readfavorites',response_model=List[schemas.Announcement])
 def get_favorites(db: Session = Depends(get_db),current_user: dict = Depends(auth.get_current_user)):
-    current_id=current_user.get('id')
-    return crud.read_favorites(db,current_id)
+    current_id = current_user.get('id')
+    return crud.read_favorites(db, current_id)
 
 
 @router.delete('/{announcement_id}')
