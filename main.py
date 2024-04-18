@@ -8,7 +8,6 @@ from auth import get_current_user
 from database import SessionLocal, engine
 import announcement_images
 
-import os
 import auth
 import crud
 import models
@@ -27,7 +26,7 @@ models.Base.metadata.create_all(bind=engine)
 
 app.mount("/uploads", StaticFiles(directory=announcement_images.UPLOAD_DIR), name="uploads")
 
-# Dependency to get the database session
+
 def get_db():
     db = SessionLocal()
     try:

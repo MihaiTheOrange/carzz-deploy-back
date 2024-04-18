@@ -70,3 +70,10 @@ class Image(Base):
     id = Column(Integer, primary_key=True, index=True)
     filename = Column(String)
     announcement_id = Column(Integer, ForeignKey('announcements.id'))
+
+
+class ProfilePic(Base):
+    __tablename__ = "profile_pictures"
+    id = Column(Integer, primary_key=True, index=True)
+    filename = Column(String)
+    user_id = Column(Integer, ForeignKey('users.id'))

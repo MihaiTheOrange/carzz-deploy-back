@@ -19,7 +19,7 @@ class UserUpdate(BaseModel):
     username: Optional[str]
     password: Optional[str]
     full_name: Optional[str]
-    role: Optional[str]
+    county: Optional[str]
 
 
 class Token(BaseModel):

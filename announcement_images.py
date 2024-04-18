@@ -1,11 +1,9 @@
 from fastapi import APIRouter, UploadFile, File, Depends, HTTPException
-from fastapi.staticfiles import StaticFiles
 from sqlalchemy.orm import Session
 from database import SessionLocal
 from models import Image
 from typing import List
 from models import Announcements
-from datetime import datetime
 
 import os
 import shutil
@@ -28,8 +26,9 @@ def get_db():
 UPLOAD_DIR = "uploads"
 os.makedirs(UPLOAD_DIR, exist_ok=True)
 
+
 @router.post("/upload/")
-async def upload_image(announcement_id:int, files: List[UploadFile] = File(...), db: Session = Depends(get_db), current_user: dict = Depends(auth.get_current_user)):
+async def upload_image(announcement_id: int, files: List[UploadFile] = File(...), db: Session = Depends(get_db), current_user: dict = Depends(auth.get_current_user)):
     announcement = db.query(Announcements).filter(Announcements.id == announcement_id).first()
 
     if announcement is None:
