@@ -8,6 +8,7 @@ class UserBase(BaseModel):
     full_name: str = Field(min_length=3, max_length=30)
     email: EmailStr
     county: str = Field(min_length=3, max_length=30)
+    phone_number: str = Field(min_length=5, max_length=15)
 
 
 class CreateUserRequest(UserBase):
@@ -69,6 +70,7 @@ class AnnouncementUpdate(AnnouncementBase):
 class Announcement(AnnouncementBase):
     id: int
     user_id: int
+    user_phone_number: str
 
     class Config:
         from_attributes = True

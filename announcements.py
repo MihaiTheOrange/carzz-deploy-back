@@ -6,7 +6,8 @@ from database import SessionLocal
 import crud
 import schemas
 import auth
-from models import Announcements
+from models import Announcements, Users
+
 
 router = APIRouter(
     prefix='/announcements',

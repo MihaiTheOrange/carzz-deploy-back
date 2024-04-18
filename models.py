@@ -13,6 +13,7 @@ class Users(Base):
     full_name = Column(String)
     email = Column(String, unique=True)
     county = Column(String)
+    phone_number = Column(String)
 
     announcements = relationship("Announcements", back_populates="user")
 
@@ -60,12 +61,12 @@ class Favorite(Base):
     __tablename__="favorites"
 
     id=Column(Integer, primary_key=True)
-    user_id=Column(Integer,ForeignKey('users.id'))
-    announcement_id=Column(Integer,ForeignKey('announcements.id'))
+    user_id=Column(Integer, ForeignKey('users.id'))
+    announcement_id=Column(Integer, ForeignKey('announcements.id'))
 
 
 class Image(Base):
     __tablename__ = "images"
     id = Column(Integer, primary_key=True, index=True)
     filename = Column(String)
-    announcement_id = Column(Integer,ForeignKey('announcements.id'))
+    announcement_id = Column(Integer, ForeignKey('announcements.id'))

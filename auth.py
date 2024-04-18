@@ -42,16 +42,21 @@ async def create_user(db: db_dependency,
     if user_db:
         raise HTTPException(status_code=400, detail="Username already taken")
 
-    user_db2 = db.query(Users).filter(create_user_request.email == Users.email).first()
-    if user_db2:
+    user_db_email = db.query(Users).filter(create_user_request.email == Users.email).first()
+    if user_db_email:
         raise HTTPException(status_code=400, detail="Email already taken")
+
+    user_db_phone = db.query(Users).filter(create_user_request.phone_number == Users.phone_number).first()
+    if user_db_phone:
+        raise HTTPException(status_code=400, detail="Phone number already taken")
 
     create_user_model = Users(
         username=create_user_request.username,
         hashed_password=bcrypt_context.hash(create_user_request.password),
         full_name=create_user_request.full_name,
         email=create_user_request.email,
-        county=create_user_request.county
+        county=create_user_request.county,
+        phone_number=create_user_request.phone_number
     )
 
     db.add(create_user_model)
