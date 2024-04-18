@@ -41,7 +41,7 @@ user_dependency = Annotated[dict, Depends(get_current_user)]
 
 @app.get("/")
 def welcome():
-    return {"Welcome!"}
+    return {"Well!"}
 
 
 # Endpoint to get a user by ID

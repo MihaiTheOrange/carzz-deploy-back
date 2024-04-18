@@ -73,7 +73,7 @@ class SellerRating(Base):
     seller_id = Column(Integer, ForeignKey('users.id'), nullable=False)
     rating = Column(Integer, nullable=False)
     comment = Column(Text)
-    created_at = Column(TIMESTAMP, nullable=False, server_default=func.now())
+    created_at = Column(String, nullable=False)
 
     # Define relationships
     user = relationship("Users", foreign_keys=[user_id], primaryjoin="SellerRating.user_id == Users.id")

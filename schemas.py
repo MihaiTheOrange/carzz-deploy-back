@@ -88,10 +88,15 @@ class SellerRatingCreate(SellerRatingBase):
     pass
 
 
+class SellerRatingUpdate(BaseModel):
+    rating: int
+    comment: Optional[str]
+
+
 class SellerRating(SellerRatingBase):
     id: int
     user_id: int
-    created_at: Optional[str]
+    created_at: str
 
     class Config:
         from_attributes = True

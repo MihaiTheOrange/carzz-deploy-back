@@ -1,3 +1,4 @@
+from datetime import datetime
 from typing import List
 
 from sqlalchemy.orm import Session
@@ -95,11 +96,15 @@ def delete_favorite(db: Session, announcement_id: int, id: int):
 
 
 def create_rating(db: Session, user_id: int, rating: schemas.SellerRatingCreate):
-    db_rating = models.SellerRating(**rating.dict(), user_id=user_id)
+    db_rating = models.SellerRating(**rating.dict(), user_id=user_id, created_at=datetime.now().strftime("%H:%M %Y-%m-%d"))
     db.add(db_rating)
     db.commit()
     db.refresh(db_rating)
     return db_rating
+
+
+def get_rating(db: Session,rating_id: int):
+    return db.query(models.SellerRating).filter(models.SellerRating.id == rating_id).first()
 
 
 def get_my_writen_ratings(db: Session, user_id: int):
@@ -108,6 +113,14 @@ def get_my_writen_ratings(db: Session, user_id: int):
 
 def get_seller_ratings(db: Session, seller_id: int):
     return db.query(models.SellerRating).filter(models.SellerRating.seller_id == seller_id).all()
+
+
+def update_rating(db: Session, rating: schemas.SellerRating, rating_update: schemas.SellerRatingUpdate):
+    for key, value in rating_update.dict().items():
+        setattr(rating, key, value)
+    db.commit()
+    db.refresh(rating)
+    return rating
 
 
 def delete_rating(db: Session, seller_id: int, id: int):
