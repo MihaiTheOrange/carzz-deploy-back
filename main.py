@@ -1,7 +1,7 @@
 from typing import Annotated
 from fastapi import FastAPI, Depends, HTTPException
 from sqlalchemy.orm import Session
-
+from fastapi.staticfiles import StaticFiles
 import favorites
 import announcements
 import ratings
@@ -12,6 +12,7 @@ import auth
 import crud
 import models
 import schemas
+import announcement_images
 
 
 # Create FastAPI app instance
@@ -20,7 +21,10 @@ app.include_router(auth.router)
 app.include_router(announcements.router)
 app.include_router(favorites.router)
 app.include_router(ratings.router)
+app.include_router(announcement_images.router)
 
+
+app.mount("/uploads", StaticFiles(directory=announcement_images.UPLOAD_DIR), name="uploads")
 
 # Create the database tables
 models.Base.metadata.create_all(bind=engine)

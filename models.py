@@ -81,3 +81,10 @@ class SellerRating(Base):
 
     def __repr__(self):
         return f"<SellerRating(id={self.id}, rating={self.rating}, user_id={self.user_id}, seller_id={self.seller_id}, created_at={self.created_at})>"
+
+
+class Image(Base):
+    __tablename__ = "images"
+    id = Column(Integer, primary_key=True, index=True)
+    filename = Column(String)
+    announcement_id = Column(Integer,ForeignKey('announcements.id'))
