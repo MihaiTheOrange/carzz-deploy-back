@@ -14,6 +14,7 @@ import auth
 import crud
 import models
 import schemas
+import announcement_images
 
 
 # Create FastAPI app instance
@@ -24,6 +25,8 @@ app.include_router(favorites.router)
 app.include_router(ratings.router)
 app.include_router(announcement_images.router)
 app.include_router(user_profile_picture.router)
+
+app.mount("/uploads", StaticFiles(directory=announcement_images.UPLOAD_DIR), name="uploads")
 
 # Create the database tables
 models.Base.metadata.create_all(bind=engine)
