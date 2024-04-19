@@ -66,7 +66,6 @@ class Favorite(Base):
     announcement_id = Column(Integer, ForeignKey('announcements.id'))
 
 
-
 class SellerRating(Base):
     __tablename__ = 'seller_ratings'
     id = Column(Integer, primary_key=True)

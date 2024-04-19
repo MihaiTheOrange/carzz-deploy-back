@@ -35,7 +35,6 @@ async def upload_image(uploaded_file: UploadFile = File(...), db: Session = Depe
             os.remove(image_path)
         with open(os.path.join(UPLOAD_DIR, uploaded_file.filename), "wb") as buffer:
             shutil.copyfileobj(uploaded_file.file, buffer)
-            shutil.move(uploaded_file.filename, str(current_user.get('id'))+'pfp')
         db_pic.filename = uploaded_file.filename
         db.commit()
     else:
