@@ -27,7 +27,6 @@ def get_db():
 UPLOAD_DIR = "uploads"
 os.makedirs(UPLOAD_DIR, exist_ok=True)
 
-
 @router.post("/upload/")
 async def upload_image(announcement_id:int, files: List[UploadFile] = File(...), db: Session = Depends(get_db), current_user: dict = Depends(auth.get_current_user)):
     announcement = db.query(Announcements).filter(Announcements.id == announcement_id).first()
@@ -59,7 +58,6 @@ async def get_announcement_image(announcement_id, db: Session = Depends(get_db))
         raise HTTPException(status_code=404, detail="Product not found")
 
     images = db.query(Image).filter(Image.announcement_id == announcement_id).all()
-    image_data = [{"id": image.id, "url": f"/{image.filename}"} for image in images]
     return {"images": image_data}
 
 

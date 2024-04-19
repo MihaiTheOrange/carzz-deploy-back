@@ -54,7 +54,7 @@ class Model(Base):
 
     id = Column(Integer, primary_key=True)
     title = Column(String, index=True)
-    make_id = Column(String, ForeignKey('make.title'))
+    make_id = Column(String)
 
 
 class Favorite(Base):
@@ -67,7 +67,6 @@ class Favorite(Base):
 
 class SellerRating(Base):
     __tablename__ = 'seller_ratings'
-
     id = Column(Integer, primary_key=True)
     user_id = Column(Integer, ForeignKey('users.id'), nullable=False)
     seller_id = Column(Integer, ForeignKey('users.id'), nullable=False)

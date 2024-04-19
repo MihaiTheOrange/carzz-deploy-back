@@ -7,6 +7,7 @@ import announcements
 import ratings
 from auth import get_current_user
 from database import SessionLocal, engine
+import announcement_images
 
 import auth
 import crud
