@@ -29,7 +29,7 @@ app.include_router(user_profile_picture.router)
 models.Base.metadata.create_all(bind=engine)
 
 app.mount("/uploads", StaticFiles(directory=announcement_images.UPLOAD_DIR), name="uploads")
-
+app.mount("/profile_pictures", StaticFiles(directory=user_profile_picture.UPLOAD_DIR), name="profile_pictures")
 
 def get_db():
     db = SessionLocal()
