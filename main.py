@@ -7,6 +7,7 @@ import announcements
 import ratings
 from auth import get_current_user
 from database import SessionLocal, engine
+import announcement_images
 
 import auth
 import crud
@@ -20,6 +21,7 @@ app.include_router(auth.router)
 app.include_router(announcements.router)
 app.include_router(favorites.router)
 app.include_router(ratings.router)
+app.include_router(announcement_images.router)
 
 
 # Create the database tables

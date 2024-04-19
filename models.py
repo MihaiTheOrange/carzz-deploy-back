@@ -54,7 +54,7 @@ class Model(Base):
 
     id = Column(Integer, primary_key=True)
     title = Column(String, index=True)
-    make_id = Column(String, ForeignKey('make.title'))
+    make_id = Column(String)
 
 
 class Favorite(Base):
@@ -67,7 +67,6 @@ class Favorite(Base):
 
 class SellerRating(Base):
     __tablename__ = 'seller_ratings'
-
     id = Column(Integer, primary_key=True)
     user_id = Column(Integer, ForeignKey('users.id'), nullable=False)
     seller_id = Column(Integer, ForeignKey('users.id'), nullable=False)
@@ -81,3 +80,10 @@ class SellerRating(Base):
 
     def __repr__(self):
         return f"<SellerRating(id={self.id}, rating={self.rating}, user_id={self.user_id}, seller_id={self.seller_id}, created_at={self.created_at})>"
+
+
+class Image(Base):
+    __tablename__ = "images"
+    id = Column(Integer, primary_key=True, index=True)
+    filename = Column(String)
+    announcement_id = Column(Integer,ForeignKey('announcements.id'))
