@@ -8,6 +8,7 @@ import ratings
 from auth import get_current_user
 from database import SessionLocal, engine
 import announcement_images
+import user_profile_picture
 
 import auth
 import crud
@@ -23,15 +24,16 @@ app.include_router(announcements.router)
 app.include_router(favorites.router)
 app.include_router(ratings.router)
 app.include_router(announcement_images.router)
-
+app.include_router(user_profile_picture.router)
 
 app.mount("/uploads", StaticFiles(directory=announcement_images.UPLOAD_DIR), name="uploads")
 
 # Create the database tables
 models.Base.metadata.create_all(bind=engine)
 
+app.mount("/uploads", StaticFiles(directory=announcement_images.UPLOAD_DIR), name="uploads")
+app.mount("/profile_pictures", StaticFiles(directory=user_profile_picture.UPLOAD_DIR), name="profile_pictures")
 
-# Dependency to get the database session
 def get_db():
     db = SessionLocal()
     try:

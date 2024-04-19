@@ -27,8 +27,8 @@ def check_favorite(user_id: int, announcement_id: int, dbb: Session = Depends(ge
     return favorite is not None
 
 
-@router.post('/')
 
+@router.post('/addfavorite')
 def add_favorite(favorite: schemas.Favorite, db: Session = Depends(get_db),current_user: dict = Depends(auth.get_current_user)):
     announcement = db.query(Announcements).filter(Announcements.id == favorite.announcement_id).first()
     if announcement is None:
@@ -38,15 +38,16 @@ def add_favorite(favorite: schemas.Favorite, db: Session = Depends(get_db),curre
     return crud.add_favorite(db, favorite, id=current_user.get('id'))
 
 
-@router.get('/', response_model=List[schemas.Announcement])
-def get_favorites(db: Session = Depends(get_db), current_user: dict = Depends(auth.get_current_user)):
+
+@router.get('/readfavorites',response_model=List[schemas.Announcement])
+def get_favorites(db: Session = Depends(get_db),current_user: dict = Depends(auth.get_current_user)):
     current_id = current_user.get('id')
     return crud.read_favorites(db, current_id)
 
 
-@router.delete('/{announcement_id}')
-def delete_favorite(announcement_id: int, db: Session = Depends(get_db),
-                    current_user: dict = Depends(auth.get_current_user)):
+
+@router.delete('/delete/{announcement_id}')
+def delete_favorite(announcement_id: int, db: Session = Depends(get_db),current_user: dict = Depends(auth.get_current_user)):
     user_id = current_user.get('id')
     db_favorite = crud.get_favorite(db, user_id, announcement_id)
     if db_favorite is None:
