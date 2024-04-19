@@ -39,7 +39,7 @@ class User(UserBase):
 class AnnouncementBase(BaseModel):
     title: str
     description: str
-    brand: str
+    make: str
     model: str
     year: int
     mileage: float
@@ -73,5 +73,30 @@ class Announcement(AnnouncementBase):
     class Config:
         from_attributes = True
 
+
 class Favorite(BaseModel):
     announcement_id: int
+
+
+class SellerRatingBase(BaseModel):
+    seller_id: int
+    rating: int
+    comment: Optional[str]
+
+
+class SellerRatingCreate(SellerRatingBase):
+    pass
+
+
+class SellerRatingUpdate(BaseModel):
+    rating: int
+    comment: Optional[str]
+
+
+class SellerRating(SellerRatingBase):
+    id: int
+    user_id: int
+    created_at: str
+
+    class Config:
+        from_attributes = True
