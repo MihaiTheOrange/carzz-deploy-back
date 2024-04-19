@@ -4,6 +4,7 @@ from sqlalchemy.orm import Session
 from fastapi.staticfiles import StaticFiles
 import favorites
 import announcements
+import ratings
 from auth import get_current_user
 from database import SessionLocal, engine
 import announcement_images
@@ -13,11 +14,13 @@ import crud
 import models
 import schemas
 
+
 # Create FastAPI app instance
 app = FastAPI()
 app.include_router(auth.router)
 app.include_router(announcements.router)
 app.include_router(favorites.router)
+app.include_router(ratings.router)
 app.include_router(announcement_images.router)
 
 
@@ -41,7 +44,7 @@ user_dependency = Annotated[dict, Depends(get_current_user)]
 
 @app.get("/")
 def welcome():
-    return {"Welcome!"}
+    return {"Well!"}
 
 
 # Endpoint to get a user by ID

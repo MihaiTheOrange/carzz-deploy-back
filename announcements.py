@@ -59,7 +59,7 @@ def get_my_announcements(db: Session = Depends(get_db), current_user: dict = Dep
 # Search Announcements
 @router.get("/search/")
 async def search_announcements(
-        brand: str = Query(None),
+        make: str = Query(None),
         model: str = Query(None),
         min_year: int = Query(None),
         max_year: int = Query(None),
@@ -82,8 +82,8 @@ async def search_announcements(
     query = db.query(Announcements)
 
     # Apply filters based on query parameters
-    if brand:
-        query = query.filter(Announcements.brand.ilike(f"%{brand}%"))
+    if make:
+        query = query.filter(Announcements.make.ilike(f"%{make}%"))
     if model:
         query = query.filter(Announcements.model.ilike(f"%{model}%"))
     if min_mileage:
