@@ -1,7 +1,7 @@
 from typing import Annotated
 from fastapi import FastAPI, Depends, HTTPException
 from sqlalchemy.orm import Session
-
+from fastapi.staticfiles import StaticFiles
 import favorites
 import announcements
 import ratings
@@ -27,8 +27,9 @@ app.include_router(announcement_images.router)
 # Create the database tables
 models.Base.metadata.create_all(bind=engine)
 
+app.mount("/uploads", StaticFiles(directory=announcement_images.UPLOAD_DIR), name="uploads")
 
-# Dependency to get the database session
+
 def get_db():
     db = SessionLocal()
     try:

@@ -8,6 +8,7 @@ import schemas
 import auth
 from models import Announcements
 
+
 router = APIRouter(
     prefix='/announcements',
     tags=['announcements']
@@ -23,21 +24,22 @@ def get_db():
 
 
 # Create Announcements
-@router.post("/", response_model=schemas.Announcement)
+@router.post("/create")
 def create_announcement(announcement: schemas.AnnouncementCreate, db: Session = Depends(get_db),
                         current_user: dict = Depends(auth.get_current_user)):
-    return crud.create_announcement(db=db, announcement=announcement, user_id=current_user.get('id'))
+    crud.create_announcement(db=db, announcement=announcement, user_id=current_user.get('id'))
+    return {"message": "Announcement created"}
 
 
 # Get all Announcements
-@router.get("/", response_model=List[schemas.Announcement])
+@router.get("/getall", response_model=List[schemas.Announcement])
 def read_announcements(skip: int = 0, limit: int = 10, db: Session = Depends(get_db)):
     announcements = crud.get_announcements(db=db, skip=skip, limit=limit)
     return announcements
 
 
 # Get Announcements by ID
-@router.get("/{announcement_id}", response_model=schemas.Announcement)
+@router.get("/idget/{announcement_id}", response_model=schemas.Announcement)
 def read_announcement(announcement_id: int, db: Session = Depends(get_db)):
     db_announcement = crud.get_announcement(db=db, announcement_id=announcement_id)
     if db_announcement is None:
@@ -121,7 +123,7 @@ async def search_announcements(
 
 
 # Update Announcements
-@router.put("/{announcement_id}", response_model=schemas.Announcement)
+@router.put("/update/{announcement_id}", response_model=schemas.Announcement)
 def update_announcement(announcement_id: int, announcement_update: schemas.AnnouncementUpdate,
                         db: Session = Depends(get_db), current_user: dict = Depends(auth.get_current_user)):
     db_announcement = crud.get_announcement(db=db, announcement_id=announcement_id)
@@ -133,7 +135,7 @@ def update_announcement(announcement_id: int, announcement_update: schemas.Annou
 
 
 # Delete Announcements
-@router.delete("/{announcement_id}")
+@router.delete("/delete/{announcement_id}")
 def delete_announcement(announcement_id: int, db: Session = Depends(get_db),
                         current_user: dict = Depends(auth.get_current_user)):
     db_announcement = crud.get_announcement(db=db, announcement_id=announcement_id)

@@ -14,6 +14,7 @@ class Users(Base):
     full_name = Column(String)
     email = Column(String, unique=True)
     county = Column(String)
+    phone_number = Column(String)
 
     announcements = relationship("Announcements", back_populates="user")
 
@@ -65,6 +66,7 @@ class Favorite(Base):
     announcement_id = Column(Integer, ForeignKey('announcements.id'))
 
 
+
 class SellerRating(Base):
     __tablename__ = 'seller_ratings'
     id = Column(Integer, primary_key=True)
@@ -86,4 +88,11 @@ class Image(Base):
     __tablename__ = "images"
     id = Column(Integer, primary_key=True, index=True)
     filename = Column(String)
-    announcement_id = Column(Integer,ForeignKey('announcements.id'))
+    announcement_id = Column(Integer, ForeignKey('announcements.id'))
+
+
+class ProfilePic(Base):
+    __tablename__ = "profile_pictures"
+    id = Column(Integer, primary_key=True, index=True)
+    filename = Column(String)
+    user_id = Column(Integer, ForeignKey('users.id'))

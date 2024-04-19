@@ -5,6 +5,9 @@ from sqlalchemy.orm import Session
 
 import models
 import schemas
+from models import Users
+import os
+from announcement_images import UPLOAD_DIR
 
 
 def get_user(db: Session, user_id: int):
@@ -40,16 +43,29 @@ def create_announcement(db: Session, announcement: schemas.AnnouncementCreate, u
 
 
 def get_announcements(db: Session, skip: int = 0, limit: int = 10):
-    return db.query(models.Announcements).offset(skip).limit(limit).all()
+    announcements = db.query(models.Announcements).offset(skip).limit(limit).all()
+    for announcement in announcements:
+        user = db.query(Users).filter(Users.id == announcement.user_id).first()
+        announcement.user_phone_number = user.phone_number
+    return announcements
 
 
 def get_my_announcements(db: Session, user_id: int, skip: int = 0, limit: int = 10):
-    return db.query(models.Announcements).filter(models.Announcements.user_id == user_id).offset(skip).limit(
-        limit).all()
+    announcements = db.query(models.Announcements).filter(models.Announcements.user_id == user_id).offset(skip).limit(limit).all()
+    for announcement in announcements:
+        user = db.query(Users).filter(Users.id == announcement.user_id).first()
+        announcement.user_phone_number = user.phone_number
+    return announcements
+
 
 
 def get_announcement(db: Session, announcement_id: int):
-    return db.query(models.Announcements).filter(models.Announcements.id == announcement_id).first()
+    announcement = db.query(models.Announcements).filter(models.Announcements.id == announcement_id).first()
+    if announcement is None:
+        return None
+    user = db.query(Users).filter(Users.id == announcement.user_id).first()
+    announcement.user_phone_number = user.phone_number
+    return announcement
 
 
 def update_announcement(db: Session, announcement: models.Announcements,
@@ -65,6 +81,17 @@ def delete_announcement(db: Session, announcement_id: int):
     db_announcement = db.query(models.Announcements).filter(models.Announcements.id == announcement_id).first()
     db.delete(db_announcement)
     db.commit()
+    delete_images(db, announcement_id)
+
+
+def delete_images(db: Session, announcement_id: int):
+    db_image = db.query(models.Image).filter(models.Image.announcement_id == announcement_id).all()
+    for image in db_image:
+        db.delete(image)
+        image_path = os.path.join(UPLOAD_DIR, image.filename)
+        if os.path.exists(image_path):
+            os.remove(image_path)
+
 
 
 def add_favorite(db: Session, favorite: schemas.Favorite, id: int):
@@ -77,9 +104,12 @@ def add_favorite(db: Session, favorite: schemas.Favorite, id: int):
     return f'Product {favorite_model.announcement_id} was added'
 
 
-def read_favorites(db: Session, id: int):
-    favorite_announcements = db.query(models.Announcements).filter(
-        models.Announcements.id == models.Favorite.announcement_id, models.Favorite.user_id == id).all()
+
+def read_favorites(db:Session, id: int):
+    favorite_announcements = db.query(models.Announcements).filter(models.Announcements.id==models.Favorite.announcement_id, models.Favorite.user_id == id).all()
+    for announcement in favorite_announcements:
+        user = db.query(Users).filter(Users.id == announcement.user_id).first()
+        announcement.user_phone_number = user.phone_number
     return favorite_announcements
 
 
