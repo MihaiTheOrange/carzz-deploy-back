@@ -37,7 +37,7 @@ def read_seller_ratings(seller_id: int, db: Session = Depends(get_db)):
     return seller_ratings
 
 
-@router.get('/mywritenratings/', response_model=List[schemas.SellerRating])
+@router.get('/my_writen_ratings/', response_model=List[schemas.SellerRating])
 def read_my_writen_ratings(user_id: int, db: Session = Depends(get_db)):
     ratings = crud.get_my_writen_ratings(db=db, user_id=user_id)
     if not ratings:
@@ -53,6 +53,17 @@ def read_rating(rating_id: int, db: Session = Depends(get_db)):
     return rating
 
 
+@router.get('/medium_rating/{seller_id}')
+def get_rating(seller_id: int, db: Session = Depends(get_db)):
+    seller_ratings = crud.get_seller_ratings(db=db, seller_id=seller_id)
+    medium_rating = 0
+    if len(seller_ratings) != 0:
+        for rating in seller_ratings:
+            medium_rating += rating.rating
+        medium_rating /= len(seller_ratings)
+    return medium_rating
+
+
 @router.put('/{rating_id}', response_model=schemas.SellerRating)
 def update_rating(rating_id: int, rating_update: schemas.SellerRatingUpdate,
                   db: Session = Depends(get_db), current_user: dict = Depends(auth.get_current_user)):
@@ -62,3 +73,14 @@ def update_rating(rating_id: int, rating_update: schemas.SellerRatingUpdate,
     if db_rating.user_id != current_user.get('id'):
         raise HTTPException(status_code=403, detail="You are not authorized to edit this rating")
     return crud.update_rating(db=db, rating=db_rating, rating_update=rating_update)
+
+
+@router.delete('/{rating_id}')
+def delete_rating(rating_id: int, db: Session = Depends(get_db), current_user: dict = Depends(auth.get_current_user)):
+    db_rating = crud.get_rating(db=db, rating_id=rating_id)
+    if not db_rating:
+        raise HTTPException(status_code=404, detail="Rating not found")
+    if db_rating.user_id != current_user.get('id'):
+        raise HTTPException(status_code=403, detail="You are not authorized to delete this rating")
+    crud.delete_rating(db=db, rating_id=rating_id)
+    return {"message": "Rating deleted"}

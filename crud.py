@@ -123,5 +123,7 @@ def update_rating(db: Session, rating: schemas.SellerRating, rating_update: sche
     return rating
 
 
-def delete_rating(db: Session, seller_id: int, id: int):
-    pass
+def delete_rating(db: Session, rating_id: int):
+    db_rating = db.query(models.SellerRating).filter(models.SellerRating.id == rating_id).first()
+    db.delete(db_rating)
+    db.commit()
