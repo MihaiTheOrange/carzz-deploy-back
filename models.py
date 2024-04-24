@@ -23,6 +23,7 @@ class Announcements(Base):
     __tablename__ = "announcements"
 
     id = Column(Integer, primary_key=True)
+    created_at = Column(String, nullable=False)
     title = Column(String, index=True)
     description = Column(String)
     user_id = Column(Integer, ForeignKey('users.id'))

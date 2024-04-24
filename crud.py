@@ -35,7 +35,7 @@ def delete_user(db: Session, user_id: int):
 
 
 def create_announcement(db: Session, announcement: schemas.AnnouncementCreate, user_id: int):
-    db_announcement = models.Announcements(**announcement.dict(), user_id=user_id)
+    db_announcement = models.Announcements(**announcement.dict(), user_id=user_id, created_at=datetime.now().strftime("%H:%M %Y-%m-%d"))
     db.add(db_announcement)
     db.commit()
     db.refresh(db_announcement)
