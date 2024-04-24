@@ -55,8 +55,10 @@ async def get_announcement_image(announcement_id, db: Session = Depends(get_db))
         raise HTTPException(status_code=404, detail="Product not found")
 
     images = db.query(Image).filter(Image.announcement_id == announcement_id).all()
-    image_urls = [f"/{UPLOAD_DIR}/{image.filename}" for image in images]
-    return {"image_urls": image_urls}
+    data = []
+    for image in images:
+        data.append({'id': image.id, 'image_url': f"/{UPLOAD_DIR}/{image.filename}"})
+    return data
 
 
 
