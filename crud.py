@@ -94,10 +94,10 @@ def delete_images(db: Session, announcement_id: int):
 
 
 
-def add_favorite(db: Session, favorite: schemas.Favorite, id: int):
+def add_favorite(db: Session, favorite: int, id: int):
     favorite_model = models.Favorite(
         user_id=id,
-        announcement_id=favorite.announcement_id
+        announcement_id=favorite
     )
     db.add(favorite_model)
     db.commit()

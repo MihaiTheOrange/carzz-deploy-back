@@ -54,6 +54,8 @@ async def get_pfp(user_id: int, db: Session = Depends(get_db)):
         raise HTTPException(status_code=404, detail="User not found")
 
     pfp = db.query(ProfilePic).filter(ProfilePic.user_id == user_id).first()
+    if pfp is None:
+        raise HTTPException(status_code=404, detail="Pfp not found")
     image_url = f"/{UPLOAD_DIR}/{pfp.filename}"
     return {"image_urls": image_url}
 
