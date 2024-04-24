@@ -1,4 +1,4 @@
-from fastapi import APIRouter, UploadFile, File, Depends, HTTPException
+from fastapi import APIRouter, UploadFile, File, Depends, HTTPException, Path
 from sqlalchemy.orm import Session
 from database import SessionLocal
 from models import Image
@@ -59,6 +59,7 @@ async def get_announcement_image(announcement_id, db: Session = Depends(get_db))
     return {"image_urls": image_urls}
 
 
+
 @router.delete("/delete/{image_id}")
 async def delete_image(image_id: int, db: Session = Depends(get_db), current_user: dict = Depends(auth.get_current_user)):
     db_image = db.query(Image).filter(Image.id == image_id).first()
@@ -82,4 +83,3 @@ async def delete_image(image_id: int, db: Session = Depends(get_db), current_use
     db.commit()
 
     return {"message": "Image deleted successfully"}
-
