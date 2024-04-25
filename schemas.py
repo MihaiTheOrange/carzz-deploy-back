@@ -93,6 +93,7 @@ class Announcement(AnnouncementBase):
 
 class MyAnnouncement(Announcement):
     views: int
+    favs: int
 
 
 class Favorite(BaseModel):

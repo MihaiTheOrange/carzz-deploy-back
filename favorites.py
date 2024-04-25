@@ -27,7 +27,6 @@ def check_favorite(user_id: int, announcement_id: int, dbb: Session = Depends(ge
     return favorite is not None
 
 
-
 @router.post('/addfavorite')
 def add_favorite(announcement_id: int, db: Session = Depends(get_db),current_user: dict = Depends(auth.get_current_user)):
     announcement = db.query(Announcements).filter(Announcements.id == announcement_id).first()
@@ -35,8 +34,8 @@ def add_favorite(announcement_id: int, db: Session = Depends(get_db),current_use
         raise HTTPException(status_code=404, detail="Product not found")
     if check_favorite(announcement_id=announcement_id, user_id=current_user.get('id'), dbb=db):
         raise HTTPException(status_code=409, detail="Product already in favorites")
+    crud.add_fav_db(db, announcement_id)
     return crud.add_favorite(db, announcement_id, id=current_user.get('id'))
-
 
 
 @router.get('/readfavorites',response_model=List[schemas.Announcement])
@@ -45,12 +44,12 @@ def get_favorites(db: Session = Depends(get_db),current_user: dict = Depends(aut
     return crud.read_favorites(db, current_id)
 
 
-
 @router.delete('/delete/{announcement_id}')
-def delete_favorite(announcement_id: int, db: Session = Depends(get_db),current_user: dict = Depends(auth.get_current_user)):
+def delete_favorite(announcement_id: int, db: Session = Depends(get_db), current_user: dict = Depends(auth.get_current_user)):
     user_id = current_user.get('id')
     db_favorite = crud.get_favorite(db, user_id, announcement_id)
     if db_favorite is None:
         raise HTTPException(status_code=404, detail="Favorite not found")
     crud.delete_favorite(db, announcement_id, user_id)
+    crud.remove_fav_db(db, announcement_id)
     return {"message": "Favorite deleted"}
