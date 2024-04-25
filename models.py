@@ -40,6 +40,7 @@ class Announcements(Base):
     horsepower = Column(Integer)
     color = Column(String)
     condition = Column(String)
+    views = Column(Integer)
 
     user = relationship("Users", back_populates="announcements")
 

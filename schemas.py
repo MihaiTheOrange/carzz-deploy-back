@@ -63,8 +63,23 @@ class AnnouncementCreate(AnnouncementBase):
     pass
 
 
-class AnnouncementUpdate(AnnouncementBase):
-    pass
+class AnnouncementUpdate(BaseModel):
+    title: Optional[str] = None
+    description: Optional[str] = None
+    make: Optional[str] = None
+    model: Optional[str] = None
+    year: Optional[int] = None
+    mileage: Optional[float] = None
+    price: Optional[float] = None
+    additional_features: Optional[str] = None
+    motor_capacity: Optional[int] = None
+    fuel_type: Optional[str] = None
+    gearbox: Optional[str] = None
+    car_body: Optional[str] = None
+    seats: Optional[int] = None
+    horsepower: Optional[int] = None
+    color: Optional[str] = None
+    condition: Optional[str] = None
 
 
 class Announcement(AnnouncementBase):
@@ -74,6 +89,10 @@ class Announcement(AnnouncementBase):
 
     class Config:
         from_attributes = True
+
+
+class MyAnnouncement(Announcement):
+    views: int
 
 
 class Favorite(BaseModel):

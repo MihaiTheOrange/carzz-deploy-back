@@ -35,7 +35,7 @@ def delete_user(db: Session, user_id: int):
 
 
 def create_announcement(db: Session, announcement: schemas.AnnouncementCreate, user_id: int):
-    db_announcement = models.Announcements(**announcement.dict(), user_id=user_id)
+    db_announcement = models.Announcements(**announcement.dict(), user_id=user_id, views=0)
     db.add(db_announcement)
     db.commit()
     db.refresh(db_announcement)
@@ -58,7 +58,6 @@ def get_my_announcements(db: Session, user_id: int, skip: int = 0, limit: int = 
     return announcements
 
 
-
 def get_announcement(db: Session, announcement_id: int):
     announcement = db.query(models.Announcements).filter(models.Announcements.id == announcement_id).first()
     if announcement is None:
@@ -66,6 +65,13 @@ def get_announcement(db: Session, announcement_id: int):
     user = db.query(Users).filter(Users.id == announcement.user_id).first()
     announcement.user_phone_number = user.phone_number
     return announcement
+
+
+def add_view(db: Session, announcement_id: int):
+    announcement = db.query(models.Announcements).filter(models.Announcements.id == announcement_id).first()
+    announcement.views += 1
+    db.commit()
+    db.refresh(announcement)
 
 
 def update_announcement(db: Session, announcement: models.Announcements,
