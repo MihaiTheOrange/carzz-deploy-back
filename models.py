@@ -41,6 +41,7 @@ class Announcements(Base):
     horsepower = Column(Integer)
     color = Column(String)
     condition = Column(String)
+    VIN = Column(String)
 
     user = relationship("Users", back_populates="announcements")
 

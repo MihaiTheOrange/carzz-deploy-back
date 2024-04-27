@@ -122,6 +122,12 @@ async def search_announcements(
     return announcements
 
 
+@router.get('/raport/')
+def get_link_raport(announcement_id: int, db: Session = Depends(get_db)):
+    db_announcement = crud.get_announcement(db=db, announcement_id=announcement_id)
+    return f'https://www.carvertical.com/ro/precheck?vin={db_announcement.VIN}'
+
+
 # Update Announcements
 @router.put("/update/{announcement_id}", response_model=schemas.Announcement)
 def update_announcement(announcement_id: int, announcement_update: schemas.AnnouncementUpdate,
