@@ -20,7 +20,7 @@ class UserUpdate(BaseModel):
     password: Optional[str]
     full_name: Optional[str]
     county: Optional[str]
-
+    phone_number: Optional[str]
 
 class Token(BaseModel):
     access_token: str
@@ -89,6 +89,10 @@ class Announcement(AnnouncementBase):
 
     class Config:
         from_attributes = True
+
+
+class AllAnnouncements(Announcement):
+    image_url: Optional[str]
 
 
 class MyAnnouncement(Announcement):

@@ -32,7 +32,7 @@ def create_announcement(announcement: schemas.AnnouncementCreate, db: Session = 
 
 
 # Get all Announcements
-@router.get("/getall", response_model=List[schemas.Announcement])
+@router.get("/getall", response_model=List[schemas.AllAnnouncements])
 def read_announcements(skip: int = 0, limit: int = 10, db: Session = Depends(get_db)):
     announcements = crud.get_announcements(db=db, skip=skip, limit=limit)
     return announcements
