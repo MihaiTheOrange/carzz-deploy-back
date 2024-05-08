@@ -8,6 +8,7 @@ from models import Announcements
 import os
 import shutil
 import auth
+import uuid
 
 router = APIRouter(
     prefix='/images',
@@ -38,13 +39,25 @@ async def upload_image(announcement_id: int, files: List[UploadFile] = File(...)
         raise HTTPException(status_code=403,
                             detail=f"User ID {current_user.get('id')} does not match the announcement user ID {announcement.id}")
 
-    for uploaded_file in files:
+    '''for uploaded_file in files:
         with open(os.path.join(UPLOAD_DIR, uploaded_file.filename), "wb") as buffer:
             shutil.copyfileobj(uploaded_file.file, buffer)
         db_image = Image(filename=uploaded_file.filename)
         db_image.announcement_id = announcement_id
         db.add(db_image)
-    db.commit()
+    db.commit()'''
+    for uploaded_file in files:
+        # Generate a unique name for the file
+        unique_filename = str(uuid.uuid4()) + os.path.splitext(uploaded_file.filename)[1]
+
+        with open(os.path.join(UPLOAD_DIR, unique_filename), "wb") as buffer:
+            shutil.copyfileobj(uploaded_file.file, buffer)
+
+        db_image = Image(filename=unique_filename)
+        db_image.announcement_id = announcement_id
+        db.add(db_image)
+
+        db.commit()
     return {"message": "Images uploaded successfully"}
 
 
@@ -55,8 +68,10 @@ async def get_announcement_image(announcement_id, db: Session = Depends(get_db))
         raise HTTPException(status_code=404, detail="Product not found")
 
     images = db.query(Image).filter(Image.announcement_id == announcement_id).all()
-    image_urls = [f"/{UPLOAD_DIR}/{image.filename}" for image in images]
-    return {"image_urls": image_urls}
+    data = []
+    for image in images:
+        data.append({'id': image.id, 'image_url': f"/{UPLOAD_DIR}/{image.filename}"})
+    return data
 
 
 
