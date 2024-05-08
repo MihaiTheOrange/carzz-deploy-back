@@ -5,7 +5,7 @@ from sqlalchemy.orm import Session
 
 import models
 import schemas
-from models import Users
+from models import Users, Image
 import os
 from announcement_images import UPLOAD_DIR
 
@@ -47,6 +47,12 @@ def get_announcements(db: Session, skip: int = 0, limit: int = 10):
     for announcement in announcements:
         user = db.query(Users).filter(Users.id == announcement.user_id).first()
         announcement.user_phone_number = user.phone_number
+        image = db.query(Image).filter(Image.announcement_id == announcement.id).first()
+        if image:
+            image_url = f"/{UPLOAD_DIR}/{image.filename}"
+        else:
+            image_url = ''
+        announcement.image_url = image_url
     return announcements
 
 

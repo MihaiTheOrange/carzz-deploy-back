@@ -74,6 +74,16 @@ async def get_announcement_image(announcement_id, db: Session = Depends(get_db))
     return data
 
 
+@router.get("/getfirstimage/{announcement_id}")
+async def get_announcement_first_image(announcement_id, db: Session = Depends(get_db)):
+    announcement = db.query(Announcements).filter(Announcements.id == announcement_id).first()
+    if announcement is None:
+        raise HTTPException(status_code=404, detail="Product not found")
+
+    image = db.query(Image).filter(Image.announcement_id == announcement_id).first()
+    data = {'id': image.id, 'image_url': f"/{UPLOAD_DIR}/{image.filename}"}
+    return data
+
 
 @router.delete("/delete/{image_id}")
 async def delete_image(image_id: int, db: Session = Depends(get_db), current_user: dict = Depends(auth.get_current_user)):
