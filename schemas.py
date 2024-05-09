@@ -86,8 +86,8 @@ class AnnouncementUpdate(BaseModel):
 class Announcement(AnnouncementBase):
     id: int
     user_id: int
-    user_phone_number: str
     created_at: str
+    user_phone_number: str
 
     class Config:
         from_attributes = True

@@ -37,7 +37,7 @@ async def upload_image(announcement_id: int, files: List[UploadFile] = File(...)
 
     if announcement.user_id != current_user.get('id'):
         raise HTTPException(status_code=403,
-                            detail=f"User ID {current_user.get('id')} does not match the announcement user ID {announcement.id}")
+                            detail=f"User ID {current_user.get('id')} does not match the announcement user ID {announcement.user_id}")
 
     '''for uploaded_file in files:
         with open(os.path.join(UPLOAD_DIR, uploaded_file.filename), "wb") as buffer:
