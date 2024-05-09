@@ -54,6 +54,7 @@ class AnnouncementBase(BaseModel):
     horsepower: int
     color: str
     condition: str
+    VIN: Optional[str]
 
     class Config:
         from_attributes = True
@@ -86,6 +87,7 @@ class Announcement(AnnouncementBase):
     id: int
     user_id: int
     user_phone_number: str
+    created_at: str
 
     class Config:
         from_attributes = True

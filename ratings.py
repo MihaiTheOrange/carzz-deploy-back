@@ -33,15 +33,15 @@ def create_rating(rating: schemas.SellerRatingCreate, db: Session = Depends(get_
 def read_seller_ratings(seller_id: int, db: Session = Depends(get_db)):
     seller_ratings = crud.get_seller_ratings(db=db, seller_id=seller_id)
     if not seller_ratings:
-        raise HTTPException(status_code=404, detail="Ratings not found")
+        raise HTTPException(status_code=404, detail="No ratings yet!")
     return seller_ratings
 
 
 @router.get('/my_writen_ratings/', response_model=List[schemas.SellerRating])
-def read_my_writen_ratings(user_id: int, db: Session = Depends(get_db)):
-    ratings = crud.get_my_writen_ratings(db=db, user_id=user_id)
+def read_my_writen_ratings(db: Session = Depends(get_db), current_user: dict = Depends(auth.get_current_user)):
+    ratings = crud.get_my_writen_ratings(db=db, user_id=current_user['id'])
     if not ratings:
-        raise HTTPException(status_code=404, detail="Ratings not found")
+        raise HTTPException(status_code=404, detail="No ratings yet!")
     return ratings
 
 
