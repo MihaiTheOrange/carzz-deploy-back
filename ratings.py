@@ -7,7 +7,7 @@ from database import SessionLocal
 import crud
 import schemas
 import auth
-from models import SellerRating
+from models import SellerRating, Users
 
 router = APIRouter(
     prefix='/ratings',
@@ -23,16 +23,24 @@ def get_db():
         db.close()
 
 
-@router.post("/{seller_id}", response_model=schemas.SellerRating)
+@router.post("/rate", response_model=schemas.SellerRating)
 def create_rating(rating: schemas.SellerRatingCreate, db: Session = Depends(get_db),
                   current_user: dict = Depends(auth.get_current_user)):
+    db_seller = db.query(Users).filter(Users.id == rating.seller_id).first()
+
+    if db_seller is None:
+        raise HTTPException(status_code=404, detail="User not found")
+
+    if db_seller.id == current_user.get('id'):
+        raise HTTPException(status_code=409, detail="You can't rate yourself!")
+
     return crud.create_rating(db=db, rating=rating, user_id=current_user.get('id'))
 
 
 @router.get('/seller_ratings/{seller_id}/', response_model=List[schemas.SellerRating])
 def read_seller_ratings(seller_id: int, db: Session = Depends(get_db)):
     seller_ratings = crud.get_seller_ratings(db=db, seller_id=seller_id)
-    if not seller_ratings:
+    if seller_ratings is None:
         raise HTTPException(status_code=404, detail="No ratings yet!")
     return seller_ratings
 

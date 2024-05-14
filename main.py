@@ -15,7 +15,7 @@ import crud
 import models
 import schemas
 import announcement_images
-
+from fastapi.middleware.cors import CORSMiddleware
 
 # Create FastAPI app instance
 app = FastAPI()
@@ -25,6 +25,14 @@ app.include_router(favorites.router)
 app.include_router(ratings.router)
 app.include_router(announcement_images.router)
 app.include_router(user_profile_picture.router)
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 app.mount("/uploads", StaticFiles(directory=announcement_images.UPLOAD_DIR), name="uploads")
 
