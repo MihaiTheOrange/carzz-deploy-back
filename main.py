@@ -60,7 +60,7 @@ def welcome():
 
 
 # Endpoint to get a user by ID
-@app.get("/users/{user_id}", response_model=schemas.User)
+@app.get("/users/read/{user_id}", response_model=schemas.User)
 async def read_user(user_id: int, db: Session = Depends(get_db)):
     db_user = crud.get_user(db=db, user_id=user_id)
     if db_user is None:
@@ -69,7 +69,7 @@ async def read_user(user_id: int, db: Session = Depends(get_db)):
 
 
 # Update Users Endpoint
-@app.put("/users/{user_id}", response_model=schemas.User)
+@app.put("/users/put/{user_id}", response_model=schemas.User)
 def update_user(user_id: int, user_update: schemas.UserUpdate, db: Session = Depends(get_db), current_user: dict = Depends(auth.get_current_user)):
     db_user = crud.get_user(db=db, user_id=user_id)
     if db_user is None:
@@ -81,7 +81,7 @@ def update_user(user_id: int, user_update: schemas.UserUpdate, db: Session = Dep
 
 
 # Delete Users Endpoint
-@app.delete("/users/{user_id}")
+@app.delete("/users/delete/{user_id}")
 def delete_user(user_id: int, db: Session = Depends(get_db), current_user: dict = Depends(auth.get_current_user)):
     if user_id != current_user["id"]:
         raise HTTPException(status_code=403, detail="You are not allowed to delete this user")

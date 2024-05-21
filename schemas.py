@@ -102,6 +102,11 @@ class MyAnnouncement(Announcement):
     favs: int
 
 
+class ImageUpload(BaseModel):
+    file_name: str
+    content: str
+
+
 class Favorite(BaseModel):
     announcement_id: int
 
