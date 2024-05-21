@@ -42,6 +42,8 @@ class Announcements(Base):
     color = Column(String)
     condition = Column(String)
     VIN = Column(String)
+    views = Column(Integer)
+    favs = Column(Integer)
 
     user = relationship("Users", back_populates="announcements")
 

@@ -32,7 +32,7 @@ def create_announcement(announcement: schemas.AnnouncementCreate, db: Session = 
 
 
 # Get all Announcements
-@router.get("/getall", response_model=List[schemas.Announcement])
+@router.get("/getall", response_model=List[schemas.AllAnnouncements])
 def read_announcements(skip: int = 0, limit: int = 10, db: Session = Depends(get_db)):
     announcements = crud.get_announcements(db=db, skip=skip, limit=limit)
     return announcements
@@ -48,7 +48,7 @@ def read_announcement(announcement_id: int, db: Session = Depends(get_db)):
 
 
 # Get my announcements
-@router.get("/my_announcements/", response_model=List[schemas.Announcement])
+@router.get("/my_announcements/", response_model=List[schemas.MyAnnouncement])
 def get_my_announcements(db: Session = Depends(get_db), current_user: dict = Depends(auth.get_current_user)):
     announcements = crud.get_my_announcements(db=db, user_id=current_user.get('id'))
     if announcements is None:
@@ -138,6 +138,22 @@ def update_announcement(announcement_id: int, announcement_update: schemas.Annou
     if db_announcement.user_id != current_user.get('id'):
         raise HTTPException(status_code=403, detail="Nu puteți actualiza acest anunț")
     return crud.update_announcement(db=db, announcement=db_announcement, announcement_update=announcement_update)
+
+
+@router.patch("/patch/{announcement_id}")
+def patch_announcement(announcement_id: int, announcement_update: schemas.AnnouncementUpdate,db: Session = Depends(get_db), current_user: dict = Depends(auth.get_current_user)):
+    db_announcement = crud.get_announcement(db=db, announcement_id=announcement_id)
+    if db_announcement is None:
+        raise HTTPException(status_code=404, detail="Announcements not found")
+    if db_announcement.user_id != current_user.get('id'):
+        raise HTTPException(status_code=403, detail="You are not allowed to update this announcement")
+
+    for key, value in announcement_update.dict(exclude_unset=True).items():
+        setattr(db_announcement, key, value)
+
+    db.commit()
+    db.refresh(db_announcement)
+    return db_announcement
 
 
 # Delete Announcements

@@ -49,7 +49,7 @@ def get_favorites(db: Session = Depends(get_db),current_user: dict = Depends(aut
 
 
 @router.delete('/delete/{announcement_id}')
-def delete_favorite(announcement_id: int, db: Session = Depends(get_db),current_user: dict = Depends(auth.get_current_user)):
+def delete_favorite(announcement_id: int, db: Session = Depends(get_db), current_user: dict = Depends(auth.get_current_user)):
     user_id = current_user.get('id')
     db_favorite = crud.get_favorite(db, user_id, announcement_id)
     if db_favorite is None:
