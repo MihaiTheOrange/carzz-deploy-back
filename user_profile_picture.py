@@ -44,14 +44,14 @@ async def upload_image(uploaded_file: UploadFile = File(...), db: Session = Depe
         db_image.user_id = current_user.get('id')
         db.add(db_image)
         db.commit()
-    return {"message": "Image uploaded successfully"}
+    return {"message": "Imaginea a fost încărcată cu succes"}
 
 
 @router.get("/get/{user_id}")
 async def get_pfp(user_id: int, db: Session = Depends(get_db)):
     user = db.query(Users).filter(Users.id == user_id).first()
     if user is None:
-        raise HTTPException(status_code=404, detail="User not found")
+        raise HTTPException(status_code=404, detail="Utilizatorul nu a fost găsit")
 
     pfp = db.query(ProfilePic).filter(ProfilePic.user_id == user_id).first()
     image_url = f"/{UPLOAD_DIR}/{pfp.filename}"

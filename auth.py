@@ -40,15 +40,15 @@ async def create_user(db: db_dependency,
 
     user_db = db.query(Users).filter(create_user_request.username == Users.username).first()
     if user_db:
-        raise HTTPException(status_code=400, detail="Username already taken")
+        raise HTTPException(status_code=400, detail="Numele de utilizator este deja folosit")
 
     user_db_email = db.query(Users).filter(create_user_request.email == Users.email).first()
     if user_db_email:
-        raise HTTPException(status_code=400, detail="Email already taken")
+        raise HTTPException(status_code=400, detail="Emailul introdus este deja asociat unui cont existent")
 
     user_db_phone = db.query(Users).filter(create_user_request.phone_number == Users.phone_number).first()
     if user_db_phone:
-        raise HTTPException(status_code=400, detail="Phone number already taken")
+        raise HTTPException(status_code=400, detail="Numărul de telefon introdus este deja asociat unui cont existent")
 
     create_user_model = Users(
         username=create_user_request.username,
@@ -61,7 +61,7 @@ async def create_user(db: db_dependency,
 
     db.add(create_user_model)
     db.commit()
-    return {"message": f"user {create_user_request.username} created"}
+    return {"message": f"Utilizatorul {create_user_request.username} este creat!"}
 
 
 # Endpoint to for login
@@ -71,7 +71,7 @@ async def login_for_access_token(form_data: Annotated[OAuth2PasswordRequestForm,
     user = authenticate_user(form_data.username, form_data.password, db)
     if not user:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED,
-                            detail='Could not validate user.')
+                            detail='Utilizatorul nu a putut fi validat')
     token = create_access_token(user.username, user.id, timedelta(minutes=100))
 
     return {'access_token': token, 'token_type': 'bearer'}
@@ -100,8 +100,8 @@ async def get_current_user(token: Annotated[str, Depends(oauth2_bearer)]):
         user_id: int = payload.get('id')
         if username is None or user_id is None:
             raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED,
-                                detail='Could not validate user.')
+                                detail='Utilizatorul nu a putut fi validat')
         return {'username': username, 'id': user_id}
     except JWTError:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED,
-                            detail='Could not validate user.')
+                            detail='Utilizatorul nu a putut fi validat')

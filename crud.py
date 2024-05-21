@@ -101,7 +101,7 @@ def add_favorite(db: Session, favorite: schemas.Favorite, id: int):
     )
     db.add(favorite_model)
     db.commit()
-    return f'Product {favorite_model.announcement_id} was added'
+    return f'Anunțul {favorite_model.announcement_id} a fost adăugat'
 
 
 

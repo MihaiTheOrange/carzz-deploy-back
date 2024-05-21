@@ -30,11 +30,13 @@ def check_favorite(user_id: int, announcement_id: int, dbb: Session = Depends(ge
 
 @router.post('/addfavorite')
 def add_favorite(favorite: schemas.Favorite, db: Session = Depends(get_db),current_user: dict = Depends(auth.get_current_user)):
+    if db.query(Favorite).filter(Favorite.user_id == current_user.get('id')).count() >= 2:
+        raise HTTPException(status_code=400, detail="Ai atins limita maximă de anunțuri favorite!")
     announcement = db.query(Announcements).filter(Announcements.id == favorite.announcement_id).first()
     if announcement is None:
-        raise HTTPException(status_code=404, detail="Product not found")
+        raise HTTPException(status_code=404, detail="Produsul nu a fost găsit!")
     if check_favorite(announcement_id = favorite.announcement_id, user_id=current_user.get('id'), dbb=db):
-        raise HTTPException(status_code=409, detail="Product already in favorites")
+        raise HTTPException(status_code=409, detail="Produsul este deja salvat la favorite!")
     return crud.add_favorite(db, favorite, id=current_user.get('id'))
 
 
@@ -51,6 +53,6 @@ def delete_favorite(announcement_id: int, db: Session = Depends(get_db),current_
     user_id = current_user.get('id')
     db_favorite = crud.get_favorite(db, user_id, announcement_id)
     if db_favorite is None:
-        raise HTTPException(status_code=404, detail="Favorite not found")
+        raise HTTPException(status_code=404, detail="Anunțul favorit nu a fost găsit")
     crud.delete_favorite(db, announcement_id, user_id)
-    return {"message": "Favorite deleted"}
+    return {"message": "Anunțul a fost șters de la favorite"}

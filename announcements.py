@@ -28,7 +28,7 @@ def get_db():
 def create_announcement(announcement: schemas.AnnouncementCreate, db: Session = Depends(get_db),
                         current_user: dict = Depends(auth.get_current_user)):
     crud.create_announcement(db=db, announcement=announcement, user_id=current_user.get('id'))
-    return {"message": "Announcement created"}
+    return {"message": "Anunțul a fost creat"}
 
 
 # Get all Announcements
@@ -43,7 +43,7 @@ def read_announcements(skip: int = 0, limit: int = 10, db: Session = Depends(get
 def read_announcement(announcement_id: int, db: Session = Depends(get_db)):
     db_announcement = crud.get_announcement(db=db, announcement_id=announcement_id)
     if db_announcement is None:
-        raise HTTPException(status_code=404, detail="Announcements not found")
+        raise HTTPException(status_code=404, detail="Anunțul nu a fost găsit")
     return db_announcement
 
 
@@ -52,7 +52,7 @@ def read_announcement(announcement_id: int, db: Session = Depends(get_db)):
 def get_my_announcements(db: Session = Depends(get_db), current_user: dict = Depends(auth.get_current_user)):
     announcements = crud.get_my_announcements(db=db, user_id=current_user.get('id'))
     if announcements is None:
-        raise HTTPException(status_code=404, detail="Announcements not found")
+        raise HTTPException(status_code=404, detail="Anunțul nu a fost găsit")
     return announcements
 
 
@@ -134,9 +134,9 @@ def update_announcement(announcement_id: int, announcement_update: schemas.Annou
                         db: Session = Depends(get_db), current_user: dict = Depends(auth.get_current_user)):
     db_announcement = crud.get_announcement(db=db, announcement_id=announcement_id)
     if db_announcement is None:
-        raise HTTPException(status_code=404, detail="Announcements not found")
+        raise HTTPException(status_code=404, detail="Anunțul nu a fost găsit")
     if db_announcement.user_id != current_user.get('id'):
-        raise HTTPException(status_code=403, detail="You are not allowed to update this announcement")
+        raise HTTPException(status_code=403, detail="Nu puteți actualiza acest anunț")
     return crud.update_announcement(db=db, announcement=db_announcement, announcement_update=announcement_update)
 
 
@@ -146,8 +146,8 @@ def delete_announcement(announcement_id: int, db: Session = Depends(get_db),
                         current_user: dict = Depends(auth.get_current_user)):
     db_announcement = crud.get_announcement(db=db, announcement_id=announcement_id)
     if db_announcement is None:
-        raise HTTPException(status_code=404, detail="Announcements not found")
+        raise HTTPException(status_code=404, detail="Anunțul nu a fost găsit")
     if db_announcement.user_id != current_user.get('id'):
-        raise HTTPException(status_code=403, detail="You are not allowed to delete this announcement")
+        raise HTTPException(status_code=403, detail="Nu puteți actualiza acest anunț")
     crud.delete_announcement(db=db, announcement_id=announcement_id)
-    return {"message": "Announcements deleted successfully"}
+    return {"message": "Anunțul a fost șters cu succes"}
