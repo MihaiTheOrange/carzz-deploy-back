@@ -112,7 +112,7 @@ def add_favorite(db: Session, favorite: int, id: int):
     )
     db.add(favorite_model)
     db.commit()
-    return f'Product {favorite_model.announcement_id} was added'
+    return f'Anunțul {favorite_model.announcement_id} a fost adăugat'
 
 
 def add_fav_db(db: Session, announcement_id: int):
