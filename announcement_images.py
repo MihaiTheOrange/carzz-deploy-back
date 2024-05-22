@@ -4,11 +4,13 @@ from database import SessionLocal
 from models import Image
 from typing import List
 from models import Announcements
-
+from schemas import ImageUpload
 import os
 import shutil
 import auth
 import uuid
+import base64
+import io
 
 router = APIRouter(
     prefix='/images',
@@ -28,7 +30,7 @@ UPLOAD_DIR = "uploads"
 os.makedirs(UPLOAD_DIR, exist_ok=True)
 
 
-@router.post("/upload/")
+'''@router.post("/upload/")
 async def upload_image(announcement_id: int, files: List[UploadFile] = File(...), db: Session = Depends(get_db), current_user: dict = Depends(auth.get_current_user)):
     announcement = db.query(Announcements).filter(Announcements.id == announcement_id).first()
 
@@ -39,13 +41,6 @@ async def upload_image(announcement_id: int, files: List[UploadFile] = File(...)
         raise HTTPException(status_code=403,
                             detail=f"ID-ul utilizatorului {current_user.get('id')} nu corespunde cu ID-ul anunțului: {announcement.id}")
 
-    for uploaded_file in files:
-        with open(os.path.join(UPLOAD_DIR, uploaded_file.filename), "wb") as buffer:
-            shutil.copyfileobj(uploaded_file.file, buffer)
-        db_image = Image(filename=uploaded_file.filename)
-        db_image.announcement_id = announcement_id
-        db.add(db_image)
-    db.commit()
     for uploaded_file in files:
         # Generate a unique name for the file
         unique_filename = str(uuid.uuid4()) + os.path.splitext(uploaded_file.filename)[1]
@@ -58,6 +53,32 @@ async def upload_image(announcement_id: int, files: List[UploadFile] = File(...)
         db.add(db_image)
 
         db.commit()
+    return {"message": "Images uploaded successfully"}
+'''
+
+@router.post("/post64")
+async def upload_image(announcement_id: int, image: ImageUpload, db: Session = Depends(get_db), current_user: dict = Depends(auth.get_current_user)):
+    announcement = db.query(Announcements).filter(Announcements.id == announcement_id).first()
+
+    if announcement is None:
+        raise HTTPException(status_code=404, detail="Anunțul nu a fost găsit")
+
+    if announcement.user_id != current_user.get('id'):
+        raise HTTPException(status_code=403,
+                            detail=f"ID-ul utilizatorului {current_user.get('id')} nu corespunde cu ID-ul anunțului: {announcement.id}")
+
+    try:
+        image_data = base64.b64decode(image.content)
+    except Exception as e:
+        raise HTTPException(status_code=400, detail="Invalid image data") from e
+
+    unique_filename = str(uuid.uuid4()) + os.path.splitext(image.file_name)[1]
+    with open(os.path.join(UPLOAD_DIR, unique_filename), "wb") as buffer:
+        buffer.write(image_data)
+    db_image = Image(filename=unique_filename)
+    db_image.announcement_id = announcement_id
+    db.add(db_image)
+    db.commit()
     return {"message": "Imaginile au fost încărcate cu succes"}
 
 
@@ -78,7 +99,7 @@ async def get_announcement_image(announcement_id, db: Session = Depends(get_db))
 async def get_announcement_first_image(announcement_id, db: Session = Depends(get_db)):
     announcement = db.query(Announcements).filter(Announcements.id == announcement_id).first()
     if announcement is None:
-        raise HTTPException(status_code=404, detail="Product not found")
+        raise HTTPException(status_code=404, detail="Anunțul nu a fost găsit")
 
     image = db.query(Image).filter(Image.announcement_id == announcement_id).first()
     data = {'id': image.id, 'image_url': f"/{UPLOAD_DIR}/{image.filename}"}
@@ -107,4 +128,5 @@ async def delete_image(image_id: int, db: Session = Depends(get_db), current_use
     db.delete(db_image)
     db.commit()
 
-    return {"message": "Imagine a fost ștearsă cu succes"}
+    return {"message": "Imaginea a fost ștearsă cu succes"}
+
