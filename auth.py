@@ -34,7 +34,7 @@ db_dependency = Annotated[Session, Depends(get_db)]
 
 
 # Endpoint for creating a new user
-@router.post('/', status_code=status.HTTP_201_CREATED)
+@router.post('/create', status_code=status.HTTP_201_CREATED)
 async def create_user(db: db_dependency,
                       create_user_request: CreateUserRequest):
 
