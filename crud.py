@@ -144,9 +144,11 @@ def delete_favorite(db: Session, announcement_id: int, id: int):
 
 def remove_fav_db(db: Session, announcement_id: int):
     announcement = db.query(models.Announcements).filter(models.Announcements.id == announcement_id).first()
-    announcement.favs -= 1
-    db.commit()
-    db.refresh(announcement)
+    if announcement:
+        announcement.favs -= 1
+        db.commit()
+        db.refresh(announcement)
+
 
 def create_rating(db: Session, user_id: int, rating: schemas.SellerRatingCreate):
     db_rating = models.SellerRating(**rating.dict(), user_id=user_id, created_at=datetime.now().strftime("%H:%M %Y-%m-%d"))

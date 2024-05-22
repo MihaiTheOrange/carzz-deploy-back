@@ -126,7 +126,10 @@ async def search_announcements(
 @router.get('/raport/')
 def get_link_raport(announcement_id: int, db: Session = Depends(get_db)):
     db_announcement = crud.get_announcement(db=db, announcement_id=announcement_id)
-    return f'https://www.carvertical.com/ro/precheck?vin={db_announcement.VIN}'
+    if db_announcement is None:
+        raise HTTPException(status_code=404, detail="Announcements not found")
+    vin = db_announcement.VIN
+    return f'https://www.carvertical.com/ro/precheck?vin={vin}'
 
 
 # Update Announcements

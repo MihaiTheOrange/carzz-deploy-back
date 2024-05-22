@@ -86,8 +86,8 @@ class AnnouncementUpdate(BaseModel):
 class Announcement(AnnouncementBase):
     id: int
     user_id: int
-    user_phone_number: str
     created_at: str
+    user_phone_number: str
 
     class Config:
         from_attributes = True
@@ -100,6 +100,11 @@ class AllAnnouncements(Announcement):
 class MyAnnouncement(Announcement):
     views: int
     favs: int
+
+
+class ImageUpload(BaseModel):
+    file_name: str
+    content: str
 
 
 class Favorite(BaseModel):
