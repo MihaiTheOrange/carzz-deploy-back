@@ -44,6 +44,7 @@ def read_announcement(announcement_id: int, db: Session = Depends(get_db)):
     db_announcement = crud.get_announcement(db=db, announcement_id=announcement_id)
     if db_announcement is None:
         raise HTTPException(status_code=404, detail="Anunțul nu a fost găsit")
+    crud.add_view(db, announcement_id)
     return db_announcement
 
 
