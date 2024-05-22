@@ -29,14 +29,14 @@ def create_rating(rating: schemas.SellerRatingCreate, db: Session = Depends(get_
     db_seller = db.query(Users).filter(Users.id == rating.seller_id).first()
 
     if db_seller is None:
-        raise HTTPException(status_code=404, detail="User not found")
+        raise HTTPException(status_code=404, detail="Utilizator inexistent")
 
     if db_seller.id == current_user.get('id'):
-        raise HTTPException(status_code=409, detail="You can't rate yourself!")
+        raise HTTPException(status_code=409, detail="Operațiune invalidă")
 
     db_rating = db.query(SellerRating).filter(SellerRating.seller_id == rating.seller_id, SellerRating.user_id == current_user.get('id')).first()
     if db_rating:
-        raise HTTPException(status_code=409, detail="You already rated this user!")
+        raise HTTPException(status_code=409, detail="Ați scris o recenzie deja")
 
     return crud.create_rating(db=db, rating=rating, user_id=current_user.get('id'))
 
@@ -45,7 +45,7 @@ def create_rating(rating: schemas.SellerRatingCreate, db: Session = Depends(get_
 def read_seller_ratings(seller_id: int, db: Session = Depends(get_db)):
     seller_ratings = crud.get_seller_ratings(db=db, seller_id=seller_id)
     if seller_ratings is None:
-        raise HTTPException(status_code=404, detail="No ratings yet!")
+        raise HTTPException(status_code=404, detail="Nicio recenzie!")
     return seller_ratings
 
 
@@ -53,7 +53,7 @@ def read_seller_ratings(seller_id: int, db: Session = Depends(get_db)):
 def read_my_writen_ratings(db: Session = Depends(get_db), current_user: dict = Depends(auth.get_current_user)):
     ratings = crud.get_my_writen_ratings(db=db, user_id=current_user['id'])
     if not ratings:
-        raise HTTPException(status_code=404, detail="No ratings yet!")
+        raise HTTPException(status_code=404, detail="Nicio recenzie!")
     return ratings
 
 
@@ -61,7 +61,7 @@ def read_my_writen_ratings(db: Session = Depends(get_db), current_user: dict = D
 def read_rating(rating_id: int, db: Session = Depends(get_db)):
     rating = crud.get_rating(db=db, rating_id=rating_id)
     if not rating:
-        raise HTTPException(status_code=404, detail="Rating not found")
+        raise HTTPException(status_code=404, detail="Recenzia nu a fost găsită")
     return rating
 
 
@@ -81,9 +81,9 @@ def update_rating(rating_id: int, rating_update: schemas.SellerRatingUpdate,
                   db: Session = Depends(get_db), current_user: dict = Depends(auth.get_current_user)):
     db_rating = crud.get_rating(db=db, rating_id=rating_id)
     if not db_rating:
-        raise HTTPException(status_code=404, detail="Rating not found")
+        raise HTTPException(status_code=404, detail="Recenzia nu a fost găsită")
     if db_rating.user_id != current_user.get('id'):
-        raise HTTPException(status_code=403, detail="You are not authorized to edit this rating")
+        raise HTTPException(status_code=403, detail="Nu puteți modifica această recenzie")
     return crud.update_rating(db=db, rating=db_rating, rating_update=rating_update)
 
 
@@ -91,8 +91,8 @@ def update_rating(rating_id: int, rating_update: schemas.SellerRatingUpdate,
 def delete_rating(rating_id: int, db: Session = Depends(get_db), current_user: dict = Depends(auth.get_current_user)):
     db_rating = crud.get_rating(db=db, rating_id=rating_id)
     if not db_rating:
-        raise HTTPException(status_code=404, detail="Rating not found")
+        raise HTTPException(status_code=404, detail="Recenzia nu a fost găsită")
     if db_rating.user_id != current_user.get('id'):
-        raise HTTPException(status_code=403, detail="You are not authorized to delete this rating")
+        raise HTTPException(status_code=403, detail="Nu puteți șterge această recenzie")
     crud.delete_rating(db=db, rating_id=rating_id)
-    return {"message": "Rating deleted"}
+    return {"message": "Recenzia a fost ștearsă"}
