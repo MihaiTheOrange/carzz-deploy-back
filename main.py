@@ -16,7 +16,7 @@ import models
 import schemas
 import announcement_images
 from fastapi.middleware.cors import CORSMiddleware
-
+import recommendations
 # Create FastAPI app instance
 app = FastAPI()
 app.include_router(auth.router)
@@ -25,6 +25,7 @@ app.include_router(favorites.router)
 app.include_router(ratings.router)
 app.include_router(announcement_images.router)
 app.include_router(user_profile_picture.router)
+app.include_router(recommendations.router)
 
 app.add_middleware(
     CORSMiddleware,
@@ -41,6 +42,7 @@ models.Base.metadata.create_all(bind=engine)
 
 app.mount("/uploads", StaticFiles(directory=announcement_images.UPLOAD_DIR), name="uploads")
 app.mount("/profile_pictures", StaticFiles(directory=user_profile_picture.UPLOAD_DIR), name="profile_pictures")
+
 
 def get_db():
     db = SessionLocal()

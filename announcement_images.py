@@ -56,6 +56,7 @@ async def upload_image(announcement_id: int, files: List[UploadFile] = File(...)
     return {"message": "Images uploaded successfully"}
 '''
 
+
 @router.post("/post64")
 async def upload_image(announcement_id: int, image: ImageUpload, db: Session = Depends(get_db), current_user: dict = Depends(auth.get_current_user)):
     announcement = db.query(Announcements).filter(Announcements.id == announcement_id).first()

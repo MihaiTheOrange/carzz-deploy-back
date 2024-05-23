@@ -182,3 +182,12 @@ def delete_rating(db: Session, rating_id: int):
     db_rating = db.query(models.SellerRating).filter(models.SellerRating.id == rating_id).first()
     db.delete(db_rating)
     db.commit()
+
+
+def add_interaction(db: Session, user_id, announcement_id):
+    interaction_model = models.ViewedAnnouncements(
+        user_id=user_id,
+        announcement_id=announcement_id
+    )
+    db.add(interaction_model)
+    db.commit()

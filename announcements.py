@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy.orm import Session
-from typing import List
+from typing import List, Annotated, Optional
 from database import SessionLocal
 
 import crud
@@ -40,11 +40,15 @@ def read_announcements(skip: int = 0, limit: int = 10, db: Session = Depends(get
 
 # Get Announcements by ID
 @router.get("/idget/{announcement_id}", response_model=schemas.Announcement)
-def read_announcement(announcement_id: int, db: Session = Depends(get_db)):
+def read_announcement(announcement_id: int, is_authenticated: Annotated[Optional[dict], Depends(auth.is_user_authenticated)], db: Session = Depends(get_db)):
     db_announcement = crud.get_announcement(db=db, announcement_id=announcement_id)
     if db_announcement is None:
         raise HTTPException(status_code=404, detail="Anunțul nu a fost găsit")
     crud.add_view(db, announcement_id)
+
+    if is_authenticated:
+        crud.add_interaction(db, is_authenticated.get("id"), db_announcement.id)
+
     return db_announcement
 
 

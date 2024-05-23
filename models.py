@@ -99,3 +99,11 @@ class ProfilePic(Base):
     id = Column(Integer, primary_key=True, index=True)
     filename = Column(String)
     user_id = Column(Integer, ForeignKey('users.id'))
+
+
+class ViewedAnnouncements(Base):
+    __tablename__ = "viewed_announcements"
+
+    id = Column(Integer, primary_key=True)
+    user_id = Column(Integer, ForeignKey('users.id'))
+    announcement_id = Column(Integer, ForeignKey('announcements.id'))
