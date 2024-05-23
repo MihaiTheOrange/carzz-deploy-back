@@ -28,7 +28,7 @@ def get_db():
 def create_announcement(announcement: schemas.AnnouncementCreate, db: Session = Depends(get_db),
                         current_user: dict = Depends(auth.get_current_user)):
     crud.create_announcement(db=db, announcement=announcement, user_id=current_user.get('id'))
-    return {"message": "Anunțul a fost creat"}
+    return {"message": "Anunț creat cu succes!"}
 
 
 # Get all Announcements
@@ -148,9 +148,9 @@ def update_announcement(announcement_id: int, announcement_update: schemas.Annou
 def patch_announcement(announcement_id: int, announcement_update: schemas.AnnouncementUpdate,db: Session = Depends(get_db), current_user: dict = Depends(auth.get_current_user)):
     db_announcement = crud.get_announcement(db=db, announcement_id=announcement_id)
     if db_announcement is None:
-        raise HTTPException(status_code=404, detail="Announcements not found")
+        raise HTTPException(status_code=404, detail="Anunțul nu a fost găsit")
     if db_announcement.user_id != current_user.get('id'):
-        raise HTTPException(status_code=403, detail="You are not allowed to update this announcement")
+        raise HTTPException(status_code=403, detail="Nu puteți actualiza acest anunț")
 
     for key, value in announcement_update.dict(exclude_unset=True).items():
         setattr(db_announcement, key, value)
