@@ -5,9 +5,15 @@ from sqlalchemy.orm import Session
 
 import models
 import schemas
-from models import Users, Image
 import os
+import numpy as np
+
+from models import Users, Image
+
 from announcement_images import UPLOAD_DIR
+
+from sklearn.feature_extraction.text import TfidfVectorizer
+from sklearn.metrics.pairwise import cosine_similarity
 
 
 def get_user(db: Session, user_id: int):

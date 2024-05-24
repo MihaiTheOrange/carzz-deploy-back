@@ -8,6 +8,7 @@ import schemas
 import auth
 from models import Announcements
 
+from sqlalchemy import func
 
 router = APIRouter(
     prefix='/announcements',
@@ -175,3 +176,15 @@ def delete_announcement(announcement_id: int, db: Session = Depends(get_db),
         raise HTTPException(status_code=403, detail="Nu puteți actualiza acest anunț")
     crud.delete_announcement(db=db, announcement_id=announcement_id)
     return {"message": "Anunțul a fost șters cu succes"}
+
+
+@router.get("/searchbar")
+async def search_announcements(query: str = Query(None, min_length=3), db: Session = Depends(get_db)):
+    results = db.query(Announcements).filter(
+        Announcements.title.ilike(f'%{query}%') |
+        Announcements.description.ilike(f'%{query}%')
+    ).all()
+
+    if not results:
+        raise HTTPException(status_code=404, detail="Nu au fost gasite anunturi")
+    return {"query": query, "results": results}

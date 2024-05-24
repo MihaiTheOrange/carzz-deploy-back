@@ -13,7 +13,7 @@ router = APIRouter(
 )
 
 
-def get_recommendations(user_id: int, db: Session, num_recommendations: int = 5):
+def get_recommendations(user_id: int, db: Session, num_recommendations: int = 10):
     user = db.query(Users).filter(Users.id == user_id).first()
     if not user:
         return []
@@ -36,7 +36,7 @@ def get_recommendations(user_id: int, db: Session, num_recommendations: int = 5)
     similarity_matrix = cosine_similarity(tfidf_matrix, tfidf_matrix)
 
     # Get user's viewed announcements
-    #user_announcements = db.query(Announcements).filter(Announcements.user_id == user_id).all()
+    # user_announcements = db.query(Announcements).filter(Announcements.user_id == user_id).all()
     user_favorites = db.query(Favorite).filter(Favorite.user_id == user_id).all()
     user_clicks = db.query(ViewedAnnouncements).filter(ViewedAnnouncements.user_id == user_id).all()
 
@@ -69,14 +69,14 @@ def get_db():
 
 
 @router.get("/recommendations/{user_id}")
-async def get_recommendations_endpoint(user_id: int, db: Session = Depends(get_db), num_recommendations: int = 5):
+async def get_recommendations_endpoint(user_id: int, db: Session = Depends(get_db), num_recommendations: int = 10):
     recommendations = get_recommendations(user_id, db, num_recommendations)
     if not recommendations:
         raise HTTPException(status_code=404, detail="Recommendations not found")
     return {"user_id": user_id, "recommendations": recommendations}
 
 
-@router.get("/testinteractions")
+'''@router.get("/testinteractions")
 def get_interaction(db: Session = Depends(get_db)):
     inter = db.query(models.ViewedAnnouncements).all()
-    return inter
+    return inter'''
