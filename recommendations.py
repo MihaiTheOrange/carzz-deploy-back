@@ -1,4 +1,3 @@
-import models
 from models import Users, Announcements, Favorite, ViewedAnnouncements
 from sqlalchemy.orm import Session
 from database import SessionLocal
@@ -68,7 +67,7 @@ def get_db():
         db.close()
 
 
-@router.get("/recommendations/{user_id}")
+@router.get("/get/{user_id}")
 async def get_recommendations_endpoint(user_id: int, db: Session = Depends(get_db), num_recommendations: int = 10):
     recommendations = get_recommendations(user_id, db, num_recommendations)
     if not recommendations:
