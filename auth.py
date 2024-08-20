@@ -111,13 +111,25 @@ def create_access_token(username: str, user_id: int, expires_delta: timedelta):
 
 async def get_current_user(token: Annotated[str, Depends(oauth2_bearer)]):
     try:
+        # Decode the JWT token
         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+        
+        # Extract username and user_id from the payload
         username: str = payload.get('sub')
         user_id: int = payload.get('id')
+        
+        # Validate extracted information
         if username is None or user_id is None:
-            raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED,
-                                detail='Utilizatorul nu a putut fi validat')
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail='Utilizatorul nu a putut fi validat'
+            )
+        
         return {'username': username, 'id': user_id}
+    
     except JWTError:
-        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED,
-                            detail='Utilizatorul nu a putut fi validat')
+        # Raise an exception if token validation fails
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail='Utilizatorul nu a putut fi validat'
+        )
