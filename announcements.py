@@ -1,12 +1,16 @@
 from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy.orm import Session
-from typing import List
+from typing import Dict, List
 from database import SessionLocal
+import logging
 
 import crud
 import schemas
 import auth
 from models import Announcements
+
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
 
 router = APIRouter(
@@ -24,11 +28,36 @@ def get_db():
 
 
 # Create Announcements
-@router.post("/create")
-def create_announcement(announcement: schemas.AnnouncementCreate, db: Session = Depends(get_db),
-                        current_user: dict = Depends(auth.get_current_user)):
-    crud.create_announcement(db=db, announcement=announcement, user_id=current_user.get('id'))
-    return {"message": "Anunț creat cu succes!"}
+@router.post("/create", response_model=Dict[str, str])
+def create_announcement(
+    announcement: schemas.AnnouncementCreate, 
+    db: Session = Depends(get_db),
+    current_user: dict = Depends(auth.get_current_user)
+) -> Dict[str, str]:
+    try:
+        # Attempt to create the announcement
+        created_announcement = crud.create_announcement(
+            db=db, 
+            announcement=announcement, 
+            user_id=current_user.get('id')
+        )
+        
+        # Return success response with details
+        return {
+            "message": "Anunț creat cu succes!",
+            "announcement_id": str(created_announcement.id),
+            "title": created_announcement.title
+        }
+    
+    except Exception as e:
+        # Log the error
+        logger.error(f"Error creating announcement: {e}")
+        
+        # Raise an HTTPException
+        raise HTTPException(
+            status_code=500, 
+            detail=f"A apărut o eroare la crearea anunțului({str(e)}). Te rugăm să încerci din nou."
+        )
 
 
 # Get all Announcements
