@@ -1,0 +1,11 @@
+# Ignore the virtual environment directory
+venv/
+.venv/
+myvenv/
+testdb/
+
+# Ignore Python compiled files
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
