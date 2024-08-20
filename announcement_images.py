@@ -2,15 +2,12 @@ from fastapi import APIRouter, UploadFile, File, Depends, HTTPException, Path
 from sqlalchemy.orm import Session
 from database import SessionLocal
 from models import Image
-from typing import List
 from models import Announcements
 from schemas import ImageUpload
 import os
-import shutil
 import auth
 import uuid
 import base64
-import io
 
 router = APIRouter(
     prefix='/images',
@@ -56,6 +53,7 @@ async def upload_image(announcement_id: int, files: List[UploadFile] = File(...)
     return {"message": "Images uploaded successfully"}
 '''
 
+
 @router.post("/post64")
 async def upload_image(announcement_id: int, image: ImageUpload, db: Session = Depends(get_db), current_user: dict = Depends(auth.get_current_user)):
     announcement = db.query(Announcements).filter(Announcements.id == announcement_id).first()
@@ -92,17 +90,6 @@ async def get_announcement_image(announcement_id, db: Session = Depends(get_db))
     data = []
     for image in images:
         data.append({'id': image.id, 'image_url': f"/{UPLOAD_DIR}/{image.filename}"})
-    return data
-
-
-@router.get("/getfirstimage/{announcement_id}")
-async def get_announcement_first_image(announcement_id, db: Session = Depends(get_db)):
-    announcement = db.query(Announcements).filter(Announcements.id == announcement_id).first()
-    if announcement is None:
-        raise HTTPException(status_code=404, detail="Anunțul nu a fost găsit")
-
-    image = db.query(Image).filter(Image.announcement_id == announcement_id).first()
-    data = {'id': image.id, 'image_url': f"/{UPLOAD_DIR}/{image.filename}"}
     return data
 
 

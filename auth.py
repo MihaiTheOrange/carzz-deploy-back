@@ -1,5 +1,5 @@
 from datetime import timedelta, datetime, timezone
-from typing import Annotated
+from typing import Annotated, Optional
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from starlette import status
@@ -128,8 +128,27 @@ async def get_current_user(token: Annotated[str, Depends(oauth2_bearer)]):
         return {'username': username, 'id': user_id}
     
     except JWTError:
+
         # Raise an exception if token validation fails
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail='Utilizatorul nu a putut fi validat'
         )
+
+
+oauth3_bearer = OAuth2PasswordBearer(tokenUrl="token", auto_error=False)
+
+
+async def is_user_authenticated(token: Optional[str] = Depends(oauth3_bearer)) -> Optional[dict]:
+    if token is None:
+        return None
+    try:
+        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+        username: str = payload.get('sub')
+        user_id: int = payload.get('id')
+        if username is None or user_id is None:
+            return None
+        return {'username': username, 'id': user_id}
+    except JWTError:
+        return None
+

@@ -1,6 +1,7 @@
 from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy.orm import Session
-from typing import Dict, List
+from sqlalchemy import func
+from typing import Dict, List, Annotated, Optional
 from database import SessionLocal
 import logging
 
@@ -8,6 +9,7 @@ import crud
 import schemas
 import auth
 from models import Announcements
+
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -69,11 +71,15 @@ def read_announcements(skip: int = 0, limit: int = 10, db: Session = Depends(get
 
 # Get Announcements by ID
 @router.get("/idget/{announcement_id}", response_model=schemas.Announcement)
-def read_announcement(announcement_id: int, db: Session = Depends(get_db)):
+def read_announcement(announcement_id: int, is_authenticated: Annotated[Optional[dict], Depends(auth.is_user_authenticated)], db: Session = Depends(get_db)):
     db_announcement = crud.get_announcement(db=db, announcement_id=announcement_id)
     if db_announcement is None:
         raise HTTPException(status_code=404, detail="Anunțul nu a fost găsit")
     crud.add_view(db, announcement_id)
+
+    if is_authenticated:
+        crud.add_interaction(db, is_authenticated.get("id"), db_announcement.id)
+
     return db_announcement
 
 
@@ -200,3 +206,15 @@ def delete_announcement(announcement_id: int, db: Session = Depends(get_db),
         raise HTTPException(status_code=403, detail="Nu puteți actualiza acest anunț")
     crud.delete_announcement(db=db, announcement_id=announcement_id)
     return {"message": "Anunțul a fost șters cu succes"}
+
+
+@router.get("/searchbar")
+async def search_announcements(query: str = Query(None, min_length=3), db: Session = Depends(get_db)):
+    results = db.query(Announcements).filter(
+        Announcements.title.ilike(f'%{query}%') |
+        Announcements.description.ilike(f'%{query}%')
+    ).all()
+
+    if not results:
+        raise HTTPException(status_code=404, detail="Nu au fost gasite anunturi")
+    return {"query": query, "results": results}

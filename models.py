@@ -101,6 +101,7 @@ class ProfilePic(Base):
     user_id = Column(Integer, ForeignKey('users.id'))
 
 
+
 class FavoriteSearches(Base):
     __tablename__ = "favorite_searches"
 
@@ -131,3 +132,10 @@ class FavoriteSearches(Base):
 # Update the Users model to reflect the new relationship
 Users.favorite_searches = relationship("FavoriteSearches", back_populates="user")
 
+
+class ViewedAnnouncements(Base):
+    __tablename__ = "viewed_announcements"
+
+    id = Column(Integer, primary_key=True)
+    user_id = Column(Integer, ForeignKey('users.id'))
+    announcement_id = Column(Integer, ForeignKey('announcements.id'))
