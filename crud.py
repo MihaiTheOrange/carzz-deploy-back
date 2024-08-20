@@ -1,6 +1,7 @@
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import List
 
+from fastapi import HTTPException
 from sqlalchemy.orm import Session
 
 import models
@@ -41,11 +42,31 @@ def delete_user(db: Session, user_id: int):
 
 
 def create_announcement(db: Session, announcement: schemas.AnnouncementCreate, user_id: int):
-    db_announcement = models.Announcements(**announcement.dict(), user_id=user_id, created_at=datetime.now().strftime("%H:%M %Y-%m-%d"), views=0, favs=0)
-    db.add(db_announcement)
-    db.commit()
-    db.refresh(db_announcement)
-    return db_announcement
+    try:
+        # Create a new announcement instance
+        db_announcement = models.Announcements(
+            **announcement.model_dump(),  # Using `model_dump` instead of `dict`
+            user_id=user_id, 
+            created_at=datetime.now(timezone.utc),  # Using timezone-aware datetime
+            views=0, 
+            favs=0
+        )
+        
+        # Add the announcement to the session and commit
+        db.add(db_announcement)
+        db.commit()
+        
+        # Refresh the session to retrieve the new announcement data
+        db.refresh(db_announcement)
+        
+        return db_announcement
+
+    except Exception as e:
+        # Rollback the session in case of error
+        db.rollback()
+        
+        # Raise an HTTPException with a status code and error details
+        raise HTTPException(status_code=500, detail=f"An error occurred while creating the announcement: {str(e)}")
 
 
 def get_announcements(db: Session, skip: int = 0, limit: int = 10):

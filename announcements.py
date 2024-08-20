@@ -1,14 +1,19 @@
 from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy.orm import Session
-from typing import List, Annotated, Optional
+from sqlalchemy import func
+from typing import Dict, List, Annotated, Optional
 from database import SessionLocal
+import logging
 
 import crud
 import schemas
 import auth
 from models import Announcements
 
-from sqlalchemy import func
+
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
+
 
 router = APIRouter(
     prefix='/announcements',
@@ -25,11 +30,36 @@ def get_db():
 
 
 # Create Announcements
-@router.post("/create")
-def create_announcement(announcement: schemas.AnnouncementCreate, db: Session = Depends(get_db),
-                        current_user: dict = Depends(auth.get_current_user)):
-    crud.create_announcement(db=db, announcement=announcement, user_id=current_user.get('id'))
-    return {"message": "Anunțul a fost creat"}
+@router.post("/create", response_model=Dict[str, str])
+def create_announcement(
+    announcement: schemas.AnnouncementCreate, 
+    db: Session = Depends(get_db),
+    current_user: dict = Depends(auth.get_current_user)
+) -> Dict[str, str]:
+    try:
+        # Attempt to create the announcement
+        created_announcement = crud.create_announcement(
+            db=db, 
+            announcement=announcement, 
+            user_id=current_user.get('id')
+        )
+        
+        # Return success response with details
+        return {
+            "message": "Anunț creat cu succes!",
+            "announcement_id": str(created_announcement.id),
+            "title": created_announcement.title
+        }
+    
+    except Exception as e:
+        # Log the error
+        logger.error(f"Error creating announcement: {e}")
+        
+        # Raise an HTTPException
+        raise HTTPException(
+            status_code=500, 
+            detail=f"A apărut o eroare la crearea anunțului({str(e)}). Te rugăm să încerci din nou."
+        )
 
 
 # Get all Announcements
@@ -153,9 +183,9 @@ def update_announcement(announcement_id: int, announcement_update: schemas.Annou
 def patch_announcement(announcement_id: int, announcement_update: schemas.AnnouncementUpdate,db: Session = Depends(get_db), current_user: dict = Depends(auth.get_current_user)):
     db_announcement = crud.get_announcement(db=db, announcement_id=announcement_id)
     if db_announcement is None:
-        raise HTTPException(status_code=404, detail="Announcements not found")
+        raise HTTPException(status_code=404, detail="Anunțul nu a fost găsit")
     if db_announcement.user_id != current_user.get('id'):
-        raise HTTPException(status_code=403, detail="You are not allowed to update this announcement")
+        raise HTTPException(status_code=403, detail="Nu puteți actualiza acest anunț")
 
     for key, value in announcement_update.dict(exclude_unset=True).items():
         setattr(db_announcement, key, value)

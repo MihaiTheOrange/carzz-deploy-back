@@ -101,6 +101,38 @@ class ProfilePic(Base):
     user_id = Column(Integer, ForeignKey('users.id'))
 
 
+
+class FavoriteSearches(Base):
+    __tablename__ = "favorite_searches"
+
+    id = Column(Integer, primary_key=True, index=True)
+    user_id = Column(Integer, ForeignKey('users.id'), nullable=False)
+    make = Column(String(50), nullable=True)
+    model = Column(String(50), nullable=True)
+    min_year = Column(Integer, nullable=True)
+    max_year = Column(Integer, nullable=True)
+    min_mileage = Column(Float, nullable=True)
+    max_mileage = Column(Float, nullable=True)
+    min_cylinder_volume = Column(Float, nullable=True)
+    max_cylinder_volume = Column(Float, nullable=True)
+    min_price = Column(Float, nullable=True)
+    max_price = Column(Float, nullable=True)
+    fuel_type = Column(String(50), nullable=True)
+    gearbox = Column(String(50), nullable=True)
+    car_body = Column(String(50), nullable=True)
+    seats = Column(Integer, nullable=True)
+    min_horsepower = Column(Integer, nullable=True)
+    max_horsepower = Column(Integer, nullable=True)
+    color = Column(String(50), nullable=True)
+    created_at = Column(TIMESTAMP, nullable=False)
+
+    user = relationship("Users", back_populates="favorite_searches")
+
+
+# Update the Users model to reflect the new relationship
+Users.favorite_searches = relationship("FavoriteSearches", back_populates="user")
+
+
 class ViewedAnnouncements(Base):
     __tablename__ = "viewed_announcements"
 

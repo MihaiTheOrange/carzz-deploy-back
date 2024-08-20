@@ -1,6 +1,7 @@
 from pydantic import BaseModel, Field
 from typing import Optional
 from pydantic import EmailStr
+from datetime import datetime
 
 
 class UserBase(BaseModel):
@@ -130,6 +131,34 @@ class SellerRating(SellerRatingBase):
     id: int
     user_id: int
     created_at: str
+
+    class Config:
+        from_attributes = True
+
+
+class FavoriteSearchCreate(BaseModel):
+    make: Optional[str] = None
+    model: Optional[str] = None
+    min_year: Optional[int] = None
+    max_year: Optional[int] = None
+    min_mileage: Optional[float] = None
+    max_mileage: Optional[float] = None
+    min_cylinder_volume: Optional[float] = None
+    max_cylinder_volume: Optional[float] = None
+    min_price: Optional[float] = None
+    max_price: Optional[float] = None
+    fuel_type: Optional[str] = None
+    gearbox: Optional[str] = None
+    car_body: Optional[str] = None
+    seats: Optional[int] = None
+    min_horsepower: Optional[int] = None
+    max_horsepower: Optional[int] = None
+    color: Optional[str] = None
+
+class FavoriteSearchResponse(FavoriteSearchCreate):
+    id: int
+    user_id: int
+    created_at: datetime
 
     class Config:
         from_attributes = True

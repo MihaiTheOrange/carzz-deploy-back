@@ -7,14 +7,14 @@ import announcements
 import ratings
 from auth import get_current_user
 from database import SessionLocal, engine
-import announcement_images
-import user_profile_picture
 
+import user_profile_picture
 import auth
 import crud
 import models
 import schemas
 import announcement_images
+import favorite_searches
 from fastapi.middleware.cors import CORSMiddleware
 import recommendations
 # Create FastAPI app instance
@@ -25,17 +25,18 @@ app.include_router(favorites.router)
 app.include_router(ratings.router)
 app.include_router(announcement_images.router)
 app.include_router(user_profile_picture.router)
+app.include_router(favorite_searches.router)
 app.include_router(recommendations.router)
+
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=["http://localhost:3000"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
 
-app.mount("/uploads", StaticFiles(directory=announcement_images.UPLOAD_DIR), name="uploads")
 
 # Create the database tables
 models.Base.metadata.create_all(bind=engine)
