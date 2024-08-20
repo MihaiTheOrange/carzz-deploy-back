@@ -2,7 +2,7 @@
 venv/
 .venv/
 myvenv/
-testdb/
+test.db/
 
 # Ignore Python compiled files
 __pycache__/
