@@ -5,9 +5,15 @@ from sqlalchemy.orm import Session
 
 import models
 import schemas
-from models import Users, Image
 import os
+import numpy as np
+
+from models import Users, Image
+
 from announcement_images import UPLOAD_DIR
+
+from sklearn.feature_extraction.text import TfidfVectorizer
+from sklearn.metrics.pairwise import cosine_similarity
 
 
 def get_user(db: Session, user_id: int):
@@ -181,4 +187,13 @@ def update_rating(db: Session, rating: schemas.SellerRating, rating_update: sche
 def delete_rating(db: Session, rating_id: int):
     db_rating = db.query(models.SellerRating).filter(models.SellerRating.id == rating_id).first()
     db.delete(db_rating)
+    db.commit()
+
+
+def add_interaction(db: Session, user_id, announcement_id):
+    interaction_model = models.ViewedAnnouncements(
+        user_id=user_id,
+        announcement_id=announcement_id
+    )
+    db.add(interaction_model)
     db.commit()
