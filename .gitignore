@@ -1,8 +1,8 @@
 # Ignore the virtual environment directory
 venv/
 .venv/
-myenv/
-test.db/
+myvenv/
+testdb/
 __pycache__/
 *.pyc
 *.pyo
