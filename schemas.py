@@ -89,13 +89,10 @@ class Announcement(AnnouncementBase):
     user_id: int
     created_at: str
     user_phone_number: str
+    image_url: Optional[list]
 
     class Config:
         from_attributes = True
-
-
-class AllAnnouncements(Announcement):
-    image_url: Optional[str]
 
 
 class MyAnnouncement(Announcement):

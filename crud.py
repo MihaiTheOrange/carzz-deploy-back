@@ -69,25 +69,35 @@ def create_announcement(db: Session, announcement: schemas.AnnouncementCreate, u
         raise HTTPException(status_code=500, detail=f"An error occurred while creating the announcement: {str(e)}")
 
 
-def get_announcements(db: Session, skip: int = 0, limit: int = 10):
-    announcements = db.query(models.Announcements).offset(skip).limit(limit).all()
+def get_announcement_images(announcement_id, base_url, db: Session):
+    announcement = db.query(models.Announcements).filter(models.Announcements.id == announcement_id).first()
+    if announcement is None:
+        raise HTTPException(status_code=404, detail="Anunțul nu a fost găsit")
+
+    images = db.query(Image).filter(Image.announcement_id == announcement_id).all()
+    data = []
+
+    for image in images:
+        data.append(f"{base_url}{UPLOAD_DIR}/{image.filename}")
+    return data
+
+
+def get_announcements(db: Session, base_url):
+    announcements = db.query(models.Announcements).all()
     for announcement in announcements:
         user = db.query(Users).filter(Users.id == announcement.user_id).first()
         announcement.user_phone_number = user.phone_number
-        image = db.query(Image).filter(Image.announcement_id == announcement.id).first()
-        if image:
-            image_url = f"/{UPLOAD_DIR}/{image.filename}"
-        else:
-            image_url = ''
-        announcement.image_url = image_url
+        images = get_announcement_images(announcement.id, base_url, db)
+        announcement.image_url = images
     return announcements
 
 
-def get_my_announcements(db: Session, user_id: int, skip: int = 0, limit: int = 10):
+def get_my_announcements(db: Session, user_id: int, base_url, skip: int = 0, limit: int = 10):
     announcements = db.query(models.Announcements).filter(models.Announcements.user_id == user_id).offset(skip).limit(limit).all()
     for announcement in announcements:
         user = db.query(Users).filter(Users.id == announcement.user_id).first()
         announcement.user_phone_number = user.phone_number
+        announcement.image_url = get_announcement_images(base_url=base_url, db=db, announcement_id=announcement.id)
     return announcements
 
 
@@ -218,3 +228,5 @@ def add_interaction(db: Session, user_id, announcement_id):
     )
     db.add(interaction_model)
     db.commit()
+
+

@@ -1,4 +1,4 @@
-from fastapi import APIRouter, UploadFile, File, Depends, HTTPException, Path
+from fastapi import APIRouter, UploadFile, File, Depends, HTTPException, Path, Request
 from sqlalchemy.orm import Session
 from database import SessionLocal
 from models import Image
@@ -8,6 +8,9 @@ import os
 import auth
 import uuid
 import base64
+from typing import List
+import shutil
+
 
 router = APIRouter(
     prefix='/images',
@@ -27,7 +30,7 @@ UPLOAD_DIR = "uploads"
 os.makedirs(UPLOAD_DIR, exist_ok=True)
 
 
-'''@router.post("/upload/")
+@router.post("/upload/")
 async def upload_image(announcement_id: int, files: List[UploadFile] = File(...), db: Session = Depends(get_db), current_user: dict = Depends(auth.get_current_user)):
     announcement = db.query(Announcements).filter(Announcements.id == announcement_id).first()
 
@@ -51,45 +54,45 @@ async def upload_image(announcement_id: int, files: List[UploadFile] = File(...)
 
         db.commit()
     return {"message": "Images uploaded successfully"}
-'''
 
 
-@router.post("/post64")
-async def upload_image(announcement_id: int, image: ImageUpload, db: Session = Depends(get_db), current_user: dict = Depends(auth.get_current_user)):
-    announcement = db.query(Announcements).filter(Announcements.id == announcement_id).first()
-
-    if announcement is None:
-        raise HTTPException(status_code=404, detail="Anunțul nu a fost găsit")
-
-    if announcement.user_id != current_user.get('id'):
-        raise HTTPException(status_code=403,
-                            detail=f"ID-ul utilizatorului {current_user.get('id')} nu corespunde cu ID-ul anunțului: {announcement.id}")
-
-    try:
-        image_data = base64.b64decode(image.content)
-    except Exception as e:
-        raise HTTPException(status_code=400, detail="Date invalide") from e
-
-    unique_filename = str(uuid.uuid4()) + os.path.splitext(image.file_name)[1]
-    with open(os.path.join(UPLOAD_DIR, unique_filename), "wb") as buffer:
-        buffer.write(image_data)
-    db_image = Image(filename=unique_filename)
-    db_image.announcement_id = announcement_id
-    db.add(db_image)
-    db.commit()
-    return {"message": "Imaginile au fost încărcate cu succes"}
+# @router.post("/post64")
+# async def upload_image(announcement_id: int, image: ImageUpload, db: Session = Depends(get_db), current_user: dict = Depends(auth.get_current_user)):
+#     announcement = db.query(Announcements).filter(Announcements.id == announcement_id).first()
+#
+#     if announcement is None:
+#         raise HTTPException(status_code=404, detail="Anunțul nu a fost găsit")
+#
+#     if announcement.user_id != current_user.get('id'):
+#         raise HTTPException(status_code=403,
+#                             detail=f"ID-ul utilizatorului {current_user.get('id')} nu corespunde cu ID-ul anunțului: {announcement.id}")
+#
+#     try:
+#         image_data = base64.b64decode(image.content)
+#     except Exception as e:
+#         raise HTTPException(status_code=400, detail="Date invalide") from e
+#
+#     unique_filename = str(uuid.uuid4()) + os.path.splitext(image.file_name)[1]
+#     with open(os.path.join(UPLOAD_DIR, unique_filename), "wb") as buffer:
+#         buffer.write(image_data)
+#     db_image = Image(filename=unique_filename)
+#     db_image.announcement_id = announcement_id
+#     db.add(db_image)
+#     db.commit()
+#     return {"message": "Imaginile au fost încărcate cu succes"}
 
 
 @router.get("/getimage/{announcement_id}")
-async def get_announcement_image(announcement_id, db: Session = Depends(get_db)):
+async def get_announcement_image(announcement_id,request: Request, db: Session = Depends(get_db)):
     announcement = db.query(Announcements).filter(Announcements.id == announcement_id).first()
     if announcement is None:
         raise HTTPException(status_code=404, detail="Anunțul nu a fost găsit")
 
     images = db.query(Image).filter(Image.announcement_id == announcement_id).all()
     data = []
+    base_url = str(request.base_url)
     for image in images:
-        data.append({'id': image.id, 'image_url': f"/{UPLOAD_DIR}/{image.filename}"})
+        data.append({'id': image.id, 'image_url': f"{base_url}{UPLOAD_DIR}/{image.filename}"})
     return data
 
 
