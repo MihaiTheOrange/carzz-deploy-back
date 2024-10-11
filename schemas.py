@@ -18,14 +18,14 @@ class CreateUserRequest(UserBase):
 
 class UserUpdate(BaseModel):
     username: Optional[str]
-    password: Optional[str]
-    full_name: Optional[str]
     county: Optional[str]
     phone_number: Optional[str]
+    email: Optional[EmailStr]
 
 class Token(BaseModel):
     access_token: str
     token_type: str
+    user_id: int
 
     class Config:
         from_attributes = True
@@ -101,6 +101,7 @@ class MyAnnouncement(Announcement):
 
 
 class ImageUpload(BaseModel):
+    announcement_id: int
     file_name: str
     content: str
 
