@@ -1,4 +1,4 @@
-from fastapi import APIRouter, UploadFile, File, Depends, HTTPException, Path, Request
+from fastapi import APIRouter, UploadFile, File, Depends, HTTPException, Path, Request, Form
 from sqlalchemy.orm import Session
 from database import SessionLocal
 from models import Image
@@ -31,7 +31,9 @@ os.makedirs(UPLOAD_DIR, exist_ok=True)
 
 
 @router.post("/upload/")
-async def upload_image(announcement_id: int, files: List[UploadFile] = File(...), db: Session = Depends(get_db), current_user: dict = Depends(auth.get_current_user)):
+async def upload_image(announcement_id: int = Form(...), files: List[UploadFile] = File(...),
+                       db: Session = Depends(get_db), current_user: dict = Depends(auth.get_current_user)):
+    # Check if the announcement exists
     announcement = db.query(Announcements).filter(Announcements.id == announcement_id).first()
 
     if announcement is None:
@@ -41,18 +43,20 @@ async def upload_image(announcement_id: int, files: List[UploadFile] = File(...)
         raise HTTPException(status_code=403,
                             detail=f"User ID {current_user.get('id')} does not match the announcement user ID {announcement.user_id}")
 
+    # Process the uploaded files
     for uploaded_file in files:
-        # Generate a unique name for the file
         unique_filename = str(uuid.uuid4()) + os.path.splitext(uploaded_file.filename)[1]
 
+        # Save the file to disk
         with open(os.path.join(UPLOAD_DIR, unique_filename), "wb") as buffer:
             shutil.copyfileobj(uploaded_file.file, buffer)
 
+        # Save file information in the database
         db_image = Image(filename=unique_filename)
         db_image.announcement_id = announcement_id
         db.add(db_image)
-
         db.commit()
+
     return {"message": "Images uploaded successfully"}
 
 

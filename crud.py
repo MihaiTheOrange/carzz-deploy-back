@@ -161,11 +161,12 @@ def add_fav_db(db: Session, announcement_id: int):
     db.refresh(announcement)
 
 
-def read_favorites(db:Session, id: int):
+def read_favorites(db:Session, id: int, base_url):
     favorite_announcements = db.query(models.Announcements).filter(models.Announcements.id==models.Favorite.announcement_id, models.Favorite.user_id == id).all()
     for announcement in favorite_announcements:
         user = db.query(Users).filter(Users.id == announcement.user_id).first()
         announcement.user_phone_number = user.phone_number
+        announcement.image_url = get_announcement_images(base_url=base_url, db=db, announcement_id=announcement.id)
     return favorite_announcements
 
 
