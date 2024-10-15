@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, HTTPException, Query
+from fastapi import APIRouter, Depends, HTTPException, Query, Request
 from sqlalchemy.orm import Session
 from sqlalchemy import func
 from typing import Dict, List, Annotated, Optional
@@ -63,15 +63,16 @@ def create_announcement(
 
 
 # Get all Announcements
-@router.get("/getall", response_model=List[schemas.AllAnnouncements])
-def read_announcements(skip: int = 0, limit: int = 10, db: Session = Depends(get_db)):
-    announcements = crud.get_announcements(db=db, skip=skip, limit=limit)
+@router.get("/getall", response_model=List[schemas.Announcement])
+def read_announcements(request: Request, db: Session = Depends(get_db)):
+    base_url = str(request.base_url)
+    announcements = crud.get_announcements(db=db, base_url=base_url)
     return announcements
 
 
 # Get Announcements by ID
 @router.get("/idget/{announcement_id}", response_model=schemas.Announcement)
-def read_announcement(announcement_id: int, is_authenticated: Annotated[Optional[dict], Depends(auth.is_user_authenticated)], db: Session = Depends(get_db)):
+def read_announcement(announcement_id: int, is_authenticated: Annotated[Optional[dict], Depends(auth.is_user_authenticated)], request:Request, db: Session = Depends(get_db)):
     db_announcement = crud.get_announcement(db=db, announcement_id=announcement_id)
     if db_announcement is None:
         raise HTTPException(status_code=404, detail="Anunțul nu a fost găsit")
@@ -80,13 +81,17 @@ def read_announcement(announcement_id: int, is_authenticated: Annotated[Optional
     if is_authenticated:
         crud.add_interaction(db, is_authenticated.get("id"), db_announcement.id)
 
+    base_url = request.base_url
+    db_announcement.image_url = crud.get_announcement_images(db=db, base_url=base_url, announcement_id=db_announcement.id)
+
     return db_announcement
 
 
 # Get my announcements
 @router.get("/my_announcements/", response_model=List[schemas.MyAnnouncement])
-def get_my_announcements(db: Session = Depends(get_db), current_user: dict = Depends(auth.get_current_user)):
-    announcements = crud.get_my_announcements(db=db, user_id=current_user.get('id'))
+def get_my_announcements(request: Request, db: Session = Depends(get_db), current_user: dict = Depends(auth.get_current_user)):
+    base_url = str(request.base_url)
+    announcements = crud.get_my_announcements(db=db, user_id=current_user.get('id'), base_url=base_url)
     if announcements is None:
         raise HTTPException(status_code=404, detail="Anunțul nu a fost găsit")
     return announcements

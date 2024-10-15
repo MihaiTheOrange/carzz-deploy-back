@@ -18,14 +18,14 @@ class CreateUserRequest(UserBase):
 
 class UserUpdate(BaseModel):
     username: Optional[str]
-    password: Optional[str]
-    full_name: Optional[str]
     county: Optional[str]
     phone_number: Optional[str]
+    email: Optional[EmailStr]
 
 class Token(BaseModel):
     access_token: str
     token_type: str
+    user_id: int
 
     class Config:
         from_attributes = True
@@ -89,13 +89,10 @@ class Announcement(AnnouncementBase):
     user_id: int
     created_at: str
     user_phone_number: str
+    image_url: Optional[list]
 
     class Config:
         from_attributes = True
-
-
-class AllAnnouncements(Announcement):
-    image_url: Optional[str]
 
 
 class MyAnnouncement(Announcement):
@@ -104,6 +101,7 @@ class MyAnnouncement(Announcement):
 
 
 class ImageUpload(BaseModel):
+    announcement_id: int
     file_name: str
     content: str
 

@@ -46,6 +46,7 @@ def read_seller_ratings(seller_id: int, db: Session = Depends(get_db)):
     seller_ratings = crud.get_seller_ratings(db=db, seller_id=seller_id)
     if seller_ratings is None:
         raise HTTPException(status_code=404, detail="Nicio recenzie!")
+
     return seller_ratings
 
 
@@ -66,7 +67,7 @@ def read_rating(rating_id: int, db: Session = Depends(get_db)):
 
 
 @router.get('/average_rating/{seller_id}')
-def get_rating(seller_id: int, db: Session = Depends(get_db)):
+def get_avg_rating(seller_id: int, db: Session = Depends(get_db)):
     seller_ratings = crud.get_seller_ratings(db=db, seller_id=seller_id)
     medium_rating = 0
     if len(seller_ratings) != 0:
