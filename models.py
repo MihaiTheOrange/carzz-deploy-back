@@ -101,7 +101,6 @@ class ProfilePic(Base):
     user_id = Column(Integer, ForeignKey('users.id'))
 
 
-
 class FavoriteSearches(Base):
     __tablename__ = "favorite_searches"
 
