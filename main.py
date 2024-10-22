@@ -26,7 +26,6 @@ app.include_router(ratings.router)
 app.include_router(announcement_images.router)
 app.include_router(user_profile_picture.router)
 app.include_router(favorite_searches.router)
-app.include_router(recommendations.router)
 
 
 app.add_middleware(

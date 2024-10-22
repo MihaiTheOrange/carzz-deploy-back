@@ -97,6 +97,15 @@ def get_my_announcements(request: Request, db: Session = Depends(get_db), curren
     return announcements
 
 
+@router.get("/seller-announcements/{user_id}", response_model=List[schemas.MyAnnouncement])
+def get_my_announcements(request: Request, user_id, db: Session = Depends(get_db), current_user: dict = Depends(auth.get_current_user)):
+    base_url = str(request.base_url)
+    announcements = crud.get_my_announcements(db=db, user_id=user_id, base_url=base_url)
+    if announcements is None:
+        raise HTTPException(status_code=404, detail="Anunțul nu a fost găsit")
+    return announcements
+
+
 # Search Announcements
 @router.get("/search/")
 async def search_announcements(

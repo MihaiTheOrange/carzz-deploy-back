@@ -91,7 +91,7 @@ def get_announcements(db: Session, base_url):
         announcement.user_phone_number = user.phone_number
         images = get_announcement_images(announcement.id, base_url, db)
         announcement.image_url = images
-    return announcements
+    return reversed(announcements)
 
 
 def get_my_announcements(db: Session, user_id: int, base_url, skip: int = 0, limit: int = 10):
