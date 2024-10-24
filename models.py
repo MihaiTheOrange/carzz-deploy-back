@@ -15,6 +15,7 @@ class Users(Base):
     email = Column(String, unique=True)
     county = Column(String)
     phone_number = Column(String)
+    preferred_theme = Column(String)
 
     announcements = relationship("Announcements", back_populates="user")
 

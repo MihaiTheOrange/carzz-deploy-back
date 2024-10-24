@@ -63,6 +63,7 @@ async def create_user(db: db_dependency,
             email=create_user_request.email,
             county=create_user_request.county,
             phone_number=create_user_request.phone_number,
+            preferred_theme="dark",
         )
 
         db.add(create_user_model)
