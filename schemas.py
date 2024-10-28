@@ -10,6 +10,7 @@ class UserBase(BaseModel):
     email: EmailStr
     county: str = Field(min_length=3, max_length=30)
     phone_number: str = Field(min_length=5, max_length=15)
+    preferred_theme: Optional[str] = None
 
 
 class CreateUserRequest(UserBase):
@@ -21,6 +22,9 @@ class UserUpdate(BaseModel):
     county: Optional[str]
     phone_number: Optional[str]
     email: Optional[EmailStr]
+
+class UserThemeUpdate(BaseModel):
+    preferred_theme: Optional[str]
 
 class Token(BaseModel):
     access_token: str
