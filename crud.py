@@ -41,6 +41,17 @@ def delete_user(db: Session, user_id: int):
     return False
 
 
+def update_user_theme(db: Session, user: models.Users, theme: schemas.UserThemeUpdate):
+    fields = [field for field in dir(theme) if not field.startswith("_")]
+    for field in fields:
+        value = getattr(theme, field)
+        setattr(user, field, value)
+    db.commit()
+    db.refresh(user)
+
+    return user
+
+
 def create_announcement(db: Session, announcement: schemas.AnnouncementCreate, user_id: int):
     try:
         # Create a new announcement instance
