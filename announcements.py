@@ -232,3 +232,4 @@ async def search_announcements(query: str = Query(None, min_length=3), db: Sessi
     if not results:
         raise HTTPException(status_code=404, detail="Nu au fost gasite anunturi")
     return {"query": query, "results": results}
+
