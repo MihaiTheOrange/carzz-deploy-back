@@ -16,7 +16,7 @@ import schemas
 import announcement_images
 import favorite_searches
 from fastapi.middleware.cors import CORSMiddleware
-import recommendations
+
 # Create FastAPI app instance
 app = FastAPI()
 app.include_router(auth.router)
@@ -77,7 +77,6 @@ async def read_curent_user(db: Session = Depends(get_db), current_user: dict = D
     if db_user is None:
         raise HTTPException(status_code=404, detail="Utilizatorii nu au fost găsiți")
     return db_user
-
 
 
 # Update Users Endpoint
