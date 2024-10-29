@@ -103,13 +103,13 @@ def get_announcements(db: Session, base_url):
     return reversed(announcements)
 
 
-def get_my_announcements(db: Session, user_id: int, base_url, skip: int = 0, limit: int = 10):
+def get_my_announcements(db: Session, user_id: int, base_url, skip: int = 0, limit: int = 1000):
     announcements = db.query(models.Announcements).filter(models.Announcements.user_id == user_id).offset(skip).limit(limit).all()
     for announcement in announcements:
         user = db.query(Users).filter(Users.id == announcement.user_id).first()
         announcement.user_phone_number = user.phone_number
         announcement.image_url = get_announcement_images(base_url=base_url, db=db, announcement_id=announcement.id)
-    return announcements
+    return reversed(announcements)
 
 
 def get_announcement(db: Session, announcement_id: int):
@@ -176,7 +176,7 @@ def read_favorites(db:Session, id: int, base_url):
         user = db.query(Users).filter(Users.id == announcement.user_id).first()
         announcement.user_phone_number = user.phone_number
         announcement.image_url = get_announcement_images(base_url=base_url, db=db, announcement_id=announcement.id)
-    return favorite_announcements
+    return reversed(favorite_announcements)
 
 
 def get_favorite(db: Session, id: int, announcement_id: int):
