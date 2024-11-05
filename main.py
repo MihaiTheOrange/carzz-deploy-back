@@ -114,3 +114,4 @@ def delete_user(user_id: int, db: Session = Depends(get_db), current_user: dict 
         if not deleted:
             raise HTTPException(status_code=404, detail="Utilizatorul nu a fost găsit")
         return {"message": "Utilizatorul a fost șters"}
+
