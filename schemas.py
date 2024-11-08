@@ -23,8 +23,10 @@ class UserUpdate(BaseModel):
     phone_number: Optional[str]
     email: Optional[EmailStr]
 
+
 class UserThemeUpdate(BaseModel):
     preferred_theme: Optional[str]
+
 
 class Token(BaseModel):
     access_token: str
@@ -156,6 +158,7 @@ class FavoriteSearchCreate(BaseModel):
     min_horsepower: Optional[int] = None
     max_horsepower: Optional[int] = None
     color: Optional[str] = None
+
 
 class FavoriteSearchResponse(FavoriteSearchCreate):
     id: int

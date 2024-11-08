@@ -107,8 +107,9 @@ def get_my_announcements(request: Request, user_id, db: Session = Depends(get_db
 
 
 # Search Announcements
-@router.get("/search/")
+@router.get("/filter/", response_model=List[schemas.Announcement])
 async def search_announcements(
+        request: Request,
         make: str = Query(None),
         model: str = Query(None),
         min_year: int = Query(None),
@@ -169,6 +170,10 @@ async def search_announcements(
 
     # Execute the query and return results
     announcements = query.all()
+    base_url = str(request.base_url)
+    for announcement in announcements:
+        announcement.image_url = crud.get_announcement_images(base_url=base_url, announcement_id=announcement.id, db=db)
+        announcement.user_phone_number = crud.get_user_phone(user_id=announcement.user_id, db=db)
     return announcements
 
 

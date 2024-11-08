@@ -14,7 +14,6 @@ from models import Users, Image
 from announcement_images import UPLOAD_DIR
 
 
-
 def get_user(db: Session, user_id: int):
     return db.query(models.Users).filter(models.Users.id == user_id).first()
 
@@ -91,6 +90,11 @@ def get_announcement_images(announcement_id, base_url, db: Session):
     if not data:
         data.append(f"{base_url}{UPLOAD_DIR}/fd02d0d1-2cae-4813-b746-b5574964578e.jfif")
     return data
+
+
+def get_user_phone(user_id, db: Session):
+    user = db.query(Users).filter(Users.id == user_id).first()
+    return user.phone_number
 
 
 def get_announcements(db: Session, base_url):
