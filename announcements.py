@@ -152,7 +152,7 @@ async def search_announcements(
     if car_body:
         query = query.filter(Announcements.car_body.ilike(f"%{car_body}%"))
     if seats:
-        query = query.filter(Announcements.seats.ilike(f"%{seats}%"))
+        query = query.filter(Announcements.seats == seats)
     if min_horsepower:
         query = query.filter(Announcements.horsepower >= min_horsepower)
     if max_horsepower:
