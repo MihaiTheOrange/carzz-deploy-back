@@ -123,9 +123,9 @@ async def search_announcements(
         fuel_type: str = Query(None),
         gearbox: str = Query(None),
         car_body: str = Query(None),
-        seats: str = Query(None),
-        min_horsepower: str = Query(None),
-        max_horsepower: str = Query(None),
+        seats: int = Query(None),
+        min_horsepower: int = Query(None),
+        max_horsepower: int = Query(None),
         color: str = Query(None),
         db: Session = Depends(get_db)
 ):
