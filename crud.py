@@ -86,9 +86,7 @@ def get_announcement_images(announcement_id, base_url, db: Session):
     data = []
 
     for image in images:
-        data.append(f"{base_url}{UPLOAD_DIR}/{image.filename}")
-    if not data:
-        data.append(f"{base_url}{UPLOAD_DIR}/fd02d0d1-2cae-4813-b746-b5574964578e.jfif")
+        data.append(f"{image.filename}")
     return data
 
 
