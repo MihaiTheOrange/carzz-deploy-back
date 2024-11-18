@@ -9,7 +9,7 @@ import schemas
 import os
 
 
-from models import Users, Image
+from models import Users, Image, Favorite
 
 from announcement_images import UPLOAD_DIR
 
@@ -86,9 +86,7 @@ def get_announcement_images(announcement_id, base_url, db: Session):
     data = []
 
     for image in images:
-        data.append(f"{base_url}{UPLOAD_DIR}/{image.filename}")
-    if not data:
-        data.append(f"{base_url}{UPLOAD_DIR}/fd02d0d1-2cae-4813-b746-b5574964578e.jfif")
+        data.append(f"{image.filename}")
     return data
 
 
@@ -141,20 +139,25 @@ def update_announcement(db: Session, announcement: models.Announcements,
     return announcement
 
 
+def delete_all_favorite(db: Session, announcement_id: int):
+    db.query(Favorite).filter(Favorite.announcement_id == announcement_id).delete()
+
+
 def delete_announcement(db: Session, announcement_id: int):
+    delete_images(db, announcement_id)
+    delete_all_favorite(db, announcement_id)
     db_announcement = db.query(models.Announcements).filter(models.Announcements.id == announcement_id).first()
     db.delete(db_announcement)
     db.commit()
-    delete_images(db, announcement_id)
 
 
 def delete_images(db: Session, announcement_id: int):
     db_image = db.query(models.Image).filter(models.Image.announcement_id == announcement_id).all()
     for image in db_image:
-        db.delete(image)
         image_path = os.path.join(UPLOAD_DIR, image.filename)
         if os.path.exists(image_path):
             os.remove(image_path)
+    db.query(Image).filter(Image.announcement_id == announcement_id).delete()
 
 
 def add_favorite(db: Session, favorite: int, id: int):
