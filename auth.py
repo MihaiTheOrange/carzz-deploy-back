@@ -11,6 +11,10 @@ from jose import jwt, JWTError
 from schemas import CreateUserRequest, Token
 import logging
 from fastapi import Request
+from dotenv import load_dotenv
+import os
+
+load_dotenv()
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -20,8 +24,8 @@ router = APIRouter(
     tags=['auth']
 )
 
-SECRET_KEY = 'yc{qq$f0#6uLOLbUfuT<S==*<z@$/Harp&O1a*m+mSnc#iKp.}=$Re!hU`+H"|='
-ALGORITHM = 'HS256'
+SECRET_KEY = os.getenv('SECRET_KEY')
+ALGORITHM = os.getenv('ALGORITHM')
 
 bcrypt_context = CryptContext(schemes=['bcrypt'], deprecated='auto')
 oauth2_bearer = OAuth2PasswordBearer(tokenUrl='auth/token')
@@ -152,4 +156,3 @@ async def is_user_authenticated(token: Optional[str] = Depends(oauth3_bearer)) -
         return {'username': username, 'id': user_id}
     except JWTError:
         return None
-
