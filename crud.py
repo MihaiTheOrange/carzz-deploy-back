@@ -86,7 +86,8 @@ def get_announcement_images(announcement_id, base_url, db: Session):
     data = []
 
     for image in images:
-        data.append(f"{image.filename}")
+        data.append({'image_id': image.id, 'image_url': image.filename})
+        # data.append(f"{image.filename}")
     return data
 
 
