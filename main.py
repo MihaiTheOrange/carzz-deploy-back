@@ -25,7 +25,6 @@ app.include_router(favorites.router)
 app.include_router(ratings.router)
 app.include_router(announcement_images.router)
 app.include_router(user_profile_picture.router)
-app.include_router(favorite_searches.router)
 
 
 app.add_middleware(
@@ -102,16 +101,4 @@ def update_user_theme(theme: schemas.UserThemeUpdate, db: Session = Depends(get_
         raise HTTPException(status_code=403, detail="Nu puteți actualiza acest utilizator")
     updated_user_theme = crud.update_user_theme(db=db, user=db_user, theme=theme)
     return updated_user_theme
-
-
-# Delete Users Endpoint
-@app.delete("/users/delete/{user_id}")
-def delete_user(user_id: int, db: Session = Depends(get_db), current_user: dict = Depends(auth.get_current_user)):
-    if user_id != current_user["id"]:
-        raise HTTPException(status_code=403, detail="Nu puteți șterge acest utilizator")
-    else:
-        deleted = crud.delete_user(db=db, user_id=user_id)
-        if not deleted:
-            raise HTTPException(status_code=404, detail="Utilizatorul nu a fost găsit")
-        return {"message": "Utilizatorul a fost șters"}
 

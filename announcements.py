@@ -70,23 +70,6 @@ def read_announcements(request: Request, db: Session = Depends(get_db)):
     return announcements
 
 
-# Get Announcements by ID
-@router.get("/idget/{announcement_id}", response_model=schemas.Announcement)
-def read_announcement(announcement_id: int, is_authenticated: Annotated[Optional[dict], Depends(auth.is_user_authenticated)], request:Request, db: Session = Depends(get_db)):
-    db_announcement = crud.get_announcement(db=db, announcement_id=announcement_id)
-    if db_announcement is None:
-        raise HTTPException(status_code=404, detail="Anunțul nu a fost găsit")
-    crud.add_view(db, announcement_id)
-
-    if is_authenticated:
-        crud.add_interaction(db, is_authenticated.get("id"), db_announcement.id)
-
-    base_url = request.base_url
-    db_announcement.image_url = crud.get_announcement_images(db=db, base_url=base_url, announcement_id=db_announcement.id)
-
-    return db_announcement
-
-
 # Get my announcements
 @router.get("/my_announcements/", response_model=List[schemas.MyAnnouncement])
 def get_my_announcements(request: Request, db: Session = Depends(get_db), current_user: dict = Depends(auth.get_current_user)):
@@ -104,6 +87,23 @@ def get_my_announcements(request: Request, user_id, db: Session = Depends(get_db
     if announcements is None:
         raise HTTPException(status_code=404, detail="Anunțul nu a fost găsit")
     return announcements
+
+
+# Get Announcements by ID
+@router.get("/idget/{announcement_id}", response_model=schemas.Announcement)
+def read_announcement(announcement_id: int, is_authenticated: Annotated[Optional[dict], Depends(auth.is_user_authenticated)], request:Request, db: Session = Depends(get_db)):
+    db_announcement = crud.get_announcement(db=db, announcement_id=announcement_id)
+    if db_announcement is None:
+        raise HTTPException(status_code=404, detail="Anunțul nu a fost găsit")
+    crud.add_view(db, announcement_id)
+
+    if is_authenticated:
+        crud.add_interaction(db, is_authenticated.get("id"), db_announcement.id)
+
+    base_url = request.base_url
+    db_announcement.image_url = crud.get_announcement_images(db=db, base_url=base_url, announcement_id=db_announcement.id)
+
+    return db_announcement
 
 
 # Search Announcements
@@ -186,18 +186,7 @@ def get_link_raport(announcement_id: int, db: Session = Depends(get_db)):
     return f'https://www.carvertical.com/ro/precheck?vin={vin}'
 
 
-# Update Announcements
-@router.put("/update/{announcement_id}", response_model=schemas.Announcement)
-def update_announcement(announcement_id: int, announcement_update: schemas.AnnouncementUpdate,
-                        db: Session = Depends(get_db), current_user: dict = Depends(auth.get_current_user)):
-    db_announcement = crud.get_announcement(db=db, announcement_id=announcement_id)
-    if db_announcement is None:
-        raise HTTPException(status_code=404, detail="Anunțul nu a fost găsit")
-    if db_announcement.user_id != current_user.get('id'):
-        raise HTTPException(status_code=403, detail="Nu puteți actualiza acest anunț")
-    return crud.update_announcement(db=db, announcement=db_announcement, announcement_update=announcement_update)
-
-
+#Update announcement
 @router.patch("/patch/{announcement_id}")
 def patch_announcement(announcement_id: int, announcement_update: schemas.AnnouncementUpdate,db: Session = Depends(get_db), current_user: dict = Depends(auth.get_current_user)):
     db_announcement = crud.get_announcement(db=db, announcement_id=announcement_id)
@@ -225,16 +214,3 @@ def delete_announcement(announcement_id: int, db: Session = Depends(get_db),
         raise HTTPException(status_code=403, detail="Nu puteți actualiza acest anunț")
     crud.delete_announcement(db=db, announcement_id=announcement_id)
     return {"message": "Anunțul a fost șters cu succes"}
-
-
-@router.get("/searchbar")
-async def search_announcements(query: str = Query(None, min_length=3), db: Session = Depends(get_db)):
-    results = db.query(Announcements).filter(
-        Announcements.title.ilike(f'%{query}%') |
-        Announcements.description.ilike(f'%{query}%')
-    ).all()
-
-    if not results:
-        raise HTTPException(status_code=404, detail="Nu au fost gasite anunturi")
-    return {"query": query, "results": results}
-
