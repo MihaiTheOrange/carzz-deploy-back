@@ -58,14 +58,6 @@ def read_my_writen_ratings(db: Session = Depends(get_db), current_user: dict = D
     return ratings
 
 
-@router.get('/read/{rating_id}', response_model=schemas.SellerRating)
-def read_rating(rating_id: int, db: Session = Depends(get_db)):
-    rating = crud.get_rating(db=db, rating_id=rating_id)
-    if not rating:
-        raise HTTPException(status_code=404, detail="Recenzia nu a fost găsită")
-    return rating
-
-
 @router.get('/average_rating/{seller_id}')
 def get_avg_rating(seller_id: int, db: Session = Depends(get_db)):
     seller_ratings = crud.get_seller_ratings(db=db, seller_id=seller_id)
@@ -75,17 +67,6 @@ def get_avg_rating(seller_id: int, db: Session = Depends(get_db)):
             medium_rating += rating.rating
         medium_rating /= len(seller_ratings)
     return medium_rating
-
-
-@router.put('/put/{rating_id}', response_model=schemas.SellerRating)
-def update_rating(rating_id: int, rating_update: schemas.SellerRatingUpdate,
-                  db: Session = Depends(get_db), current_user: dict = Depends(auth.get_current_user)):
-    db_rating = crud.get_rating(db=db, rating_id=rating_id)
-    if not db_rating:
-        raise HTTPException(status_code=404, detail="Recenzia nu a fost găsită")
-    if db_rating.user_id != current_user.get('id'):
-        raise HTTPException(status_code=403, detail="Nu puteți modifica această recenzie")
-    return crud.update_rating(db=db, rating=db_rating, rating_update=rating_update)
 
 
 @router.delete('/delete/{rating_id}')
