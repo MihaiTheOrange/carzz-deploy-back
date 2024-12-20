@@ -6,7 +6,9 @@ import os
 
 load_dotenv()
 
-YOUR = os.getenv('YOUR')
+# YOUR = os.getenv('YOUR')
+YOUR = 'Sanitarium0113,:'
+
 SQLALCHEMY_DATABASE_URL = f"postgresql://postgres.bfjctkuyvzgxkrwuscxv:{YOUR}@aws-0-eu-central-1.pooler.supabase.com:6543/postgres"
 
 
